@@ -46,4 +46,5 @@ export function clearSession() {
     localStorage.removeItem('user');
 
     Cookies.remove('token');
+    Cookies.remove('role');
 }

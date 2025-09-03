@@ -87,7 +87,7 @@ export default function CajasPage() {
             filters={{ search }}
             service={cajaService}
           />
-          <Link href="/dashboard/cajas/new" className="px-4 py-2 bg-green-600 text-white text-lg font-medium rounded hover:bg-green-800 transition">
+          <Link href="/dashboard/cajas/new" className="px-4 py-2 bg-green-600 text-white text-lg font-medium rounded-lg hover:bg-green-800 transition">
             Nueva Caja
           </Link>
         </div>

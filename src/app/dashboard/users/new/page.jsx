@@ -5,48 +5,44 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { userService } from '@/services/user.service';
 import { useNotification } from "@/contexts/NotificationContext";
+import { getCurrentUser } from "@/utils/session";
+
+const ROLES = [
+  { value: 'admin', label: 'Admin' },
+  { value: 'supervisor', label: 'Supervisor' },
+  { value: 'recaudador', label: 'Recaudador' },
+  { value: 'tesorero', label: 'Tesorero' },
+  { value: 'cajero', label: 'Cajero' },
+];
+
+const normalizeRole = (s) => (s || '').toString().trim().toLowerCase();
 
 export default function NewUserPage() {
   const router = useRouter();
-  const [roles, setRoles] = useState([]);
+  const { showNotification } = useNotification();
+
   const [form, setForm] = useState({
     username: '',
     email: '',
     password: '',
-    role: ''
+    role: ROLES[0]?.value || ''  // default al primero
   });
-  const [error, setError] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const { showNotification } = useNotification();
+
+  const [canEdit, setCanEdit] = useState(false);
 
   useEffect(() => {
-    const fetchRoles = async () => {
-      try {
-        const r = await userService.listRoles();
-        setRoles(r);
-        if (r.length) setForm(f => ({ ...f, role: r[0] }));
-      } catch (err) {
-        setError(err.message || 'Error al cargar roles');
-        showNotification({
-          type: "error",
-          title: "Error",
-          message: 'Error al cargar roles',
-          duration: 5000
-        });
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchRoles();
+    const u = getCurrentUser();
+    setCanEdit(!!u && u.role === "admin");
   }, []);
 
-  const handleChange = (e) => setForm({ ...form, [e.target.name]: e.target.value });
+  const handleChange = (e) =>
+    setForm({ ...form, [e.target.name]: e.target.value });
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError(null);
+
     try {
-      await userService.create(form);
+      await userService.create({ ...form, role: normalizeRole(form.role) });
       showNotification({
         type: "success",
         title: "Usuario creado",
@@ -55,35 +51,34 @@ export default function NewUserPage() {
       });
       router.push('/dashboard/users');
     } catch (err) {
-      setError(err.message || 'Error al crear usuario');
       showNotification({
         type: "error",
         title: "Error",
-        message: err.message || 'Error al crear el usuario',
+        message: err?.message || 'Error al crear el usuario',
         duration: 5000
       });
     }
   };
-
-  if (loading) return <div className="max-w-3xl mx-auto mt-8 p-6 bg-white rounded-xl shadow-md">Cargando roles...</div>;
 
   return (
     <div className="max-w-3xl mx-auto mt-8 p-6 bg-white rounded-xl shadow-md">
       <h1 className="text-2xl font-bold mb-6 text-gray-800">Nuevo Usuario</h1>
 
       <form onSubmit={handleSubmit} className="space-y-4">
+        {/* Nombre */}
         <div>
-          <label className="block text-gray-700 font-medium mb-1">Username:</label>
+          <label className="block text-gray-700 font-medium mb-1">Nombre:</label>
           <input
             name="username"
             value={form.username}
             onChange={handleChange}
             required
             className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
-            placeholder="Ej: juanperez"
+            placeholder="Ej: Juan Perez"
           />
         </div>
 
+        {/* Email */}
         <div>
           <label className="block text-gray-700 font-medium mb-1">Email:</label>
           <input
@@ -97,6 +92,7 @@ export default function NewUserPage() {
           />
         </div>
 
+        {/* Password */}
         <div>
           <label className="block text-gray-700 font-medium mb-1">Contraseña:</label>
           <input
@@ -105,29 +101,32 @@ export default function NewUserPage() {
             value={form.password}
             onChange={handleChange}
             required
+            minLength={6}
             className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
             placeholder="••••••••"
-            minLength={6}
           />
           <p className="text-sm text-gray-500 mt-1">Mínimo 6 caracteres</p>
         </div>
 
+        {/* Rol (hardcodeado) */}
         <div>
           <label className="block text-gray-700 font-medium mb-1">Rol:</label>
           <select
             name="role"
             value={form.role}
             onChange={handleChange}
-            className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400 capitalize"
+            className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
+            required
           >
-            {roles.map((r) => (
-              <option key={r} value={r} className="capitalize">
-                {r.toLowerCase()}
+            {ROLES.map(r => (
+              <option key={r.value} value={r.value}>
+                {r.label}
               </option>
             ))}
           </select>
         </div>
 
+        {/* Acciones */}
         <div className="flex justify-center space-x-10 mt-6">
           <Link
             href="/dashboard/users"

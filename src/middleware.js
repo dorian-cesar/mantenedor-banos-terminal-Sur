@@ -1,14 +1,18 @@
 import { NextResponse } from "next/server";
 
-export function middleware(req) {
-  const token = req.cookies.get("token")?.value;
-  const role = req.cookies.get("role")?.value;
+const ALLOWED_ROLES = new Set(["admin", "supervisor", "recaudador", "tesorero"]);
 
-  if (!token && req.nextUrl.pathname.startsWith("/dashboard")) {
+export function middleware(req) {
+  const url = req.nextUrl;
+  const token = req.cookies.get("token")?.value || null;
+  const role = req.cookies.get("role")?.value || null;
+
+  // 1) Bloquear si no hay token
+  if (!token) {
     return NextResponse.redirect(new URL("/login", req.url));
   }
 
-  if (role !== "admin" && req.nextUrl.pathname.startsWith("/dashboard")) {
+  if (!role || !ALLOWED_ROLES.has(role)) {
     return NextResponse.redirect(new URL("/login", req.url));
   }
 
@@ -16,7 +20,5 @@ export function middleware(req) {
 }
 
 export const config = {
-  matcher: [
-    "/dashboard/:path*",
-  ],
+  matcher: ["/dashboard/:path*"],
 };

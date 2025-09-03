@@ -50,6 +50,16 @@ export default function EditServicePage() {
     const handleSubmit = async (e) => {
         e.preventDefault();
         setError(null);
+        if (!confirm('¿Guardar cambios? Al marcar el estado como "inactivo", el registro se ocultará de la tabla.')) {
+            showNotification({
+                type: "info",
+                title: "Cancelado",
+                message: "No se ha guardado",
+                duration: 3000
+            });
+            return;
+        }
+
         try {
             await serviceService.update(id, form);
             showNotification({
@@ -65,7 +75,7 @@ export default function EditServicePage() {
                 type: "error",
                 title: "Error al guardar",
                 message: err.message || 'Error al actualizar servicio',
-                duration: 5000
+                duration: 3000
             });
         }
     };
@@ -76,7 +86,7 @@ export default function EditServicePage() {
                 type: "info",
                 title: "Cancelado",
                 message: "La eliminación fue cancelada",
-                duration: 5000
+                duration: 3000
             });
             return;
         }
@@ -102,7 +112,6 @@ export default function EditServicePage() {
     };
 
     if (loading) return <FormSkeleton7 />;
-    if (error) return <p className="text-red-600 p-4 bg-red-50 rounded-lg">{error}</p>;
     if (!form) return <p className="text-gray-600 p-4">Servicio no encontrado</p>;
 
     return (
@@ -111,13 +120,11 @@ export default function EditServicePage() {
                 <h1 className="text-2xl font-bold text-gray-800">Editar Servicio: {form.nombre}</h1>
                 <button
                     onClick={handleDelete}
-                    className="bg-red-500 text-white font-semibold px-4 py-2 rounded-md hover:bg-red-600 transition"
+                    className="bg-red-500 text-white font-semibold px-4 py-2 rounded-lg hover:bg-red-600 transition"
                 >
                     Eliminar Servicio
                 </button>
             </div>
-
-            {error && <div className="mb-4 p-3 bg-red-50 text-red-600 rounded-lg">{error}</div>}
 
             <form onSubmit={handleSubmit} className="space-y-4">
                 <div>
@@ -189,13 +196,13 @@ export default function EditServicePage() {
                 <div className="flex justify-end space-x-3 pt-4">
                     <Link
                         href="/dashboard/servicios"
-                        className="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 transition"
+                        className="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition"
                     >
                         Cancelar
                     </Link>
                     <button
                         type="submit"
-                        className="bg-blue-500 text-white font-semibold px-6 py-2 rounded-md hover:bg-blue-600 transition"
+                        className="bg-blue-500 text-white font-semibold px-6 py-2 rounded-lg hover:bg-blue-600 transition"
                     >
                         Guardar Cambios
                     </button>

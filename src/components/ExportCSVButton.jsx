@@ -18,7 +18,7 @@ export default function ExportCSVButton({ filename, filters, service }) {
     return (
         <button
             onClick={handleExport}
-            className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-800 transition"
+            className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-800 transition"
         >
             Exportar CSV
         </button>

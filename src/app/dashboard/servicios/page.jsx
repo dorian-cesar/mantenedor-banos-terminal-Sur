@@ -93,7 +93,7 @@ export default function ServicesPage() {
           />
           <Link
             href="/dashboard/servicios/new"
-            className="px-4 py-2 bg-green-600 text-white text-lg font-medium rounded hover:bg-green-800 transition"
+            className="px-4 py-2 bg-green-600 text-white text-lg font-medium rounded-lg hover:bg-green-800 transition"
           >
             Nuevo Servicio
           </Link>
@@ -116,7 +116,6 @@ export default function ServicesPage() {
           <table className="min-w-full border border-gray-200 divide-y divide-gray-200">
             <thead className="bg-gray-100">
               <tr>
-                <th className="px-4 py-2 text-left text-sm font-medium text-gray-700">ID</th>
                 <th className="px-4 py-2 text-left text-sm font-medium text-gray-700">Nombre</th>
                 <th className="px-4 py-2 text-left text-sm font-medium text-gray-700">Tipo</th>
                 <th className="px-4 py-2 text-left text-sm font-medium text-gray-700">Precio</th>
@@ -127,7 +126,6 @@ export default function ServicesPage() {
             <tbody className="divide-y divide-gray-100 bg-white">
               {services.map((s) => (
                 <tr key={s.id} className="hover:bg-gray-200">
-                  <td className="px-4 py-2">{s.id}</td>
                   <td className="px-4 py-2">{s.nombre}</td>
                   <td className="px-4 py-2 capitalize">{s.tipo.toLowerCase()}</td>
                   <td className="px-4 py-2">${formatNumber(s.precio)}</td>

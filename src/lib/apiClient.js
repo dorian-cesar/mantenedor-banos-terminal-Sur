@@ -27,7 +27,7 @@ export class ApiClient {
     // Si no autorizado
     const res = await fetch(url.toString(), opts);
 
-    if ((res.status === 401 || res.status === 403) && path !== '/auth/login') {
+    if ((res.status === 401 || res.status === 403) && path !== '/auth/loginAdmin') {
       clearSession();
       if (typeof window !== 'undefined') {
         window.location.href = '/login';

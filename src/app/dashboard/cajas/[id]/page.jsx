@@ -130,8 +130,8 @@ export default function EditCajaPage() {
         </div>
 
         <div className="flex justify-center space-x-10 mt-6">
-          <Link href="/dashboard/cajas" className="bg-red-500 text-white font-semibold px-6 py-2 rounded-md hover:bg-red-800 transition">Cancelar</Link>
-          <button type="submit" className="bg-blue-500 text-white font-semibold px-6 py-2 rounded-md hover:bg-blue-800 transition">
+          <Link href="/dashboard/cajas" className="bg-red-500 text-white font-semibold px-6 py-2 rounded-lg hover:bg-red-800 transition">Cancelar</Link>
+          <button type="submit" className="bg-blue-500 text-white font-semibold px-6 py-2 rounded-lg hover:bg-blue-800 transition">
             Actualizar
           </button>
         </div>
