@@ -10,7 +10,8 @@ import {
     ArrowsRightLeftIcon,
     LockOpenIcon,
     Bars3Icon,
-    ChevronLeftIcon
+    ChevronLeftIcon,
+    NewspaperIcon
 } from '@heroicons/react/24/outline';
 
 function Sidebar() {
@@ -75,6 +76,12 @@ function Sidebar() {
                         <Link href="/dashboard/cierres" className={getLinkClasses("/dashboard/cierres")}>
                             <LockOpenIcon className={`h-5 w-5 text-blue-500 ${open ? "mr-3" : ""}`} />
                             {open && <span>Aperturas y Cierres</span>}
+                        </Link>
+                    </li>
+                    <li>
+                        <Link href="/dashboard/folios" className={getLinkClasses("/dashboard/folios")}>
+                            <NewspaperIcon className={`h-5 w-5 text-blue-500 ${open ? "mr-3" : ""}`} />
+                            {open && <span>Solicitar Folios</span>}
                         </Link>
                     </li>
                 </ul>

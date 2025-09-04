@@ -52,7 +52,7 @@ export default function DashboardPage() {
   return (
     <div className="p-6 space-y-8">
       <div className="flex space-x-2 items-center">
-        <h1 className="text-3xl font-bold text-gray-800">Resumen</h1>
+        <h1 className="text-3xl font-bold text-gray-800">Resumen General</h1>
         <button
           className="p-2 bg-blue-500 text-white rounded-full hover:bg-blue-800 transition flex items-center justify-center"
           onClick={fetchData}
@@ -69,6 +69,7 @@ export default function DashboardPage() {
         <CardResumen titulo="Cajas" valor={meta?.totalCajas ?? 0} Icon={ComputerDesktopIcon} color="blue" />
       </div>
 
+      <h1 className="text-3xl font-bold text-gray-800">Resumen Diario</h1>
       {/* Totales del día */}
       <div className="bg-white rounded-2xl shadow p-5">
         <h3 className="text-xl font-semibold mb-2">Totales del día (todas las cajas)</h3>

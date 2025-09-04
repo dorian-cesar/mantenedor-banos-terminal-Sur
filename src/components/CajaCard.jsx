@@ -11,6 +11,8 @@ export default function CajaCard({ caja, onOpen }) {
         efectivo = 0,
         tarjeta = 0,
         total = 0,
+        retiros = 0,
+        monto_inicial = 0,
         transacciones = 0,
     } = caja || {};
 
@@ -30,10 +32,13 @@ export default function CajaCard({ caja, onOpen }) {
                 <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
                     <div className="min-w-0 flex-1">
                         <h3 className="text-lg sm:text-xl font-semibold text-gray-900 truncate">
-                            {nombre || `Caja ${numero_caja}`} · {nombre_usuario}
+                           ({numero_caja}) {nombre || `Caja ${numero_caja}`} · {nombre_usuario}
                         </h3>
                         <p className="text-sm sm:text-base text-gray-600 truncate">
-                            #{numero_caja} · {ubicacion || "Sin ubicación"} · {estado_caja || "—"}
+                            {ubicacion || "Sin ubicación"} · {estado_caja || "—"}
+                        </p>
+                        <p className="text-sm sm:text-base text-gray-600 truncate">
+                            Monto inicial · {Number(monto_inicial || 0).toLocaleString("es-CL")}
                         </p>
                     </div>
 
@@ -56,7 +61,7 @@ export default function CajaCard({ caja, onOpen }) {
 
                 {/* Footer */}
                 <div className="mt-2 flex flex-col gap-4 sm:gap-3">
-                    <div className="grid grid-cols-3 gap-3 text-gray-700">
+                    <div className="grid grid-cols-4 gap-3 text-gray-700">
                         <Metric
                             icon={<BanknotesIcon className="h-4 w-4 sm:h-5 sm:w-5" />}
                             label="Efectivo"
@@ -68,6 +73,10 @@ export default function CajaCard({ caja, onOpen }) {
                             value={`$${Number(tarjeta || 0).toLocaleString("es-CL")}`}
                         />
                         <Metric label="Transacciones" value={Number(transacciones || 0)} />
+                        <Metric
+                            label="Retiro"
+                            value={`$${Number(retiros || 0).toLocaleString("es-CL")}`}
+                        />
                     </div>
 
                     {/* Botón que abre modal */}
