@@ -28,7 +28,6 @@ export default function CajaCard({ caja, onOpen }) {
             title={isOpen ? "Caja Abierta" : "Caja Cerrada"}
         >
             <div className="p-4 sm:p-5 flex flex-col">
-                {/* Header */}
                 <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
                     <div className="min-w-0 flex-1">
                         <h3 className="text-lg sm:text-xl font-semibold text-gray-900 truncate">
@@ -84,7 +83,7 @@ export default function CajaCard({ caja, onOpen }) {
                         <button
                             type="button"
                             onClick={() => onOpen?.(caja)}
-                            className="w-full sm:w-auto inline-flex items-center justify-center gap-1.5 rounded-lg px-3 sm:px-4 py-2 text-sm sm:text-base font-medium bg-blue-600 text-white hover:bg-blue-700 transition focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-400"
+                            className={`${isOpen ? "bg-blue-500 hover:bg-blue-800" : "bg-red-500 hover:bg-red-800"} flex items-center py-2 px-3 rounded-lg text-white font-semibold`}
                         >
                             Detalles
                             <ChevronRightIcon className="h-4 w-4" />

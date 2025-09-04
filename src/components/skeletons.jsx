@@ -39,22 +39,46 @@ export function DashboardSkeleton() {
       {/* 4 Cards */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
         {[...Array(4)].map((_, i) => (
-          <div key={i} className={`h-32 bg-gray-200 rounded-2xl ${shimmer}`}></div>
+          <div key={i} className={`h-40 bg-gray-200 rounded-2xl ${shimmer}`}></div>
         ))}
       </div>
+      <div className={`h-10 w-1/4 bg-gray-200 rounded ${shimmer}`}></div>
 
-      {/* Gráfico + GananciaCards */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Gráfico */}
-        <div className={`lg:col-span-2 h-72 bg-gray-200 rounded-2xl ${shimmer}`}></div>
-        {/* Placeholder secundario */}
-        <div className={`h-72 bg-gray-200 rounded-2xl ${shimmer}`}></div>
+      <div className={`h-40 w-full bg-gray-200 rounded-xl ${shimmer}`}></div>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 items-stretch">
+        {[...Array(3)].map((_, i) => (
+          <div key={i} className={`h-72 bg-gray-200 rounded-2xl ${shimmer}`}></div>
+        ))}
       </div>
+    </div>
+  );
+}
 
-      {/* 4 GananciaCards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+export function DashboardSkeleton1() {
+  return (
+    <div className="p-6 space-y-6">
+
+      {/* 4 Cards */}
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
         {[...Array(4)].map((_, i) => (
-          <div key={i} className={`h-32 bg-gray-200 rounded-2xl ${shimmer}`}></div>
+          <div key={i} className={`h-40 bg-gray-200 rounded-2xl ${shimmer}`}></div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+export function DashboardSkeleton2() {
+  return (
+    <div className="p-6 space-y-6">
+      {/* Título */}
+
+      <div className={`h-40 w-full bg-gray-200 rounded-xl ${shimmer}`}></div>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 items-stretch">
+        {[...Array(3)].map((_, i) => (
+          <div key={i} className={`h-72 bg-gray-200 rounded-2xl ${shimmer}`}></div>
         ))}
       </div>
     </div>
@@ -320,7 +344,7 @@ export function FormSkeleton6() {
     <div className="max-w-3xl mx-auto mt-8 p-6 bg-white rounded-xl shadow-md">
       {/* Título */}
       <div className={`h-8 w-1/3 rounded bg-gray-200 mb-6 ${shimmer}`}></div>
-      
+
       {/* Formulario */}
       <div className="space-y-4">
         {/* Nombre */}
@@ -328,7 +352,7 @@ export function FormSkeleton6() {
           <div className={`h-4 w-24 rounded bg-gray-200 mb-1 ${shimmer}`}></div>
           <div className={`h-10 w-full rounded-md bg-gray-200 ${shimmer}`}></div>
         </div>
-        
+
         {/* Grid de 2 columnas */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {[...Array(2)].map((_, i) => (
@@ -338,19 +362,19 @@ export function FormSkeleton6() {
             </div>
           ))}
         </div>
-        
+
         {/* Descripción */}
         <div>
           <div className={`h-4 w-24 rounded bg-gray-200 mb-1 ${shimmer}`}></div>
           <div className={`h-32 w-full rounded-md bg-gray-200 ${shimmer}`}></div>
         </div>
-        
+
         {/* Estado */}
         <div>
           <div className={`h-4 w-24 rounded bg-gray-200 mb-1 ${shimmer}`}></div>
           <div className={`h-10 w-full rounded-md bg-gray-200 ${shimmer}`}></div>
         </div>
-        
+
         {/* Botones */}
         <div className="flex justify-center space-x-10 mt-6">
           <div className={`h-10 w-24 rounded-md bg-gray-200 ${shimmer}`}></div>

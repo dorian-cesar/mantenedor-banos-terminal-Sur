@@ -2,6 +2,7 @@
 import { boletaService } from "@/services/boleta.service";
 import { useState } from "react";
 import { useNotification } from "@/contexts/NotificationContext";
+import { createPortal } from "react-dom";
 
 export default function FoliosPage() {
     const [cantidad, setCantidad] = useState("");
@@ -69,40 +70,7 @@ export default function FoliosPage() {
     return (
         <div className="min-h-full flex items-center justify-center relative">
             {/* Overlay mientras carga */}
-            {loading && (
-                <div className="absolute inset-0 bg-black/30 backdrop-blur-sm flex flex-col items-center justify-center z-50">
-                    <div className="bg-white px-6 py-4 rounded-lg shadow-lg text-center space-y-3 max-w-sm">
-                        <svg
-                            className="animate-spin h-8 w-8 text-blue-600 mx-auto"
-                            xmlns="http://www.w3.org/2000/svg"
-                            fill="none"
-                            viewBox="0 0 24 24"
-                        >
-                            <circle
-                                className="opacity-25"
-                                cx="12"
-                                cy="12"
-                                r="10"
-                                stroke="currentColor"
-                                strokeWidth="4"
-                            ></circle>
-                            <path
-                                className="opacity-75"
-                                fill="currentColor"
-                                d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"
-                            ></path>
-                        </svg>
-                        <h2 className="text-gray-800 text-xl font-bold">
-                            Estamos solicitando los folios...
-                        </h2>
-                        <p className="text-md text-gray-700">
-                            Este proceso suele demorar entre 20 y 80 segundos. Por favor no
-                            cierres ni actualices la página.
-                        </p>
-                    </div>
-                </div>
-            )}
-
+            {loading && <LoadingOverlay />}
             {/* Formulario */}
             <div className="w-full max-w-md">
                 <div className="text-center mb-8">
@@ -149,8 +117,8 @@ export default function FoliosPage() {
                                 type="submit"
                                 disabled={loading}
                                 className={`w-full py-3 px-4 rounded-lg text-white font-medium transition-all flex items-center justify-center ${loading
-                                        ? "bg-blue-400 cursor-not-allowed"
-                                        : "bg-blue-600 hover:bg-blue-700 shadow-md hover:shadow-lg"
+                                    ? "bg-blue-400 cursor-not-allowed"
+                                    : "bg-blue-600 hover:bg-blue-700 shadow-md hover:shadow-lg"
                                     }`}
                             >
                                 {loading ? (
@@ -186,5 +154,42 @@ export default function FoliosPage() {
                 </form>
             </div>
         </div>
+    );
+}
+
+function LoadingOverlay() {
+    return createPortal(
+        <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/40 backdrop-blur-sm">
+            <div className="bg-white px-6 py-4 rounded-lg shadow-lg text-center space-y-3 max-w-sm">
+                <svg
+                    className="animate-spin h-8 w-8 text-blue-600 mx-auto"
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                >
+                    <circle
+                        className="opacity-25"
+                        cx="12"
+                        cy="12"
+                        r="10"
+                        stroke="currentColor"
+                        strokeWidth="4"
+                    ></circle>
+                    <path
+                        className="opacity-75"
+                        fill="currentColor"
+                        d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"
+                    ></path>
+                </svg>
+                <p className="text-gray-700 font-medium">
+                    Estamos solicitando los folios...
+                </p>
+                <p className="text-xs text-gray-500">
+                    Este proceso suele demorar entre 20 y 80 segundos. Por favor no cierres
+                    ni actualices la página.
+                </p>
+            </div>
+        </div>,
+        document.body
     );
 }
