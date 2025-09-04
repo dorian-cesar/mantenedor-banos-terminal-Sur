@@ -115,7 +115,7 @@ export default function DetallesCajaModal({ open, onClose, caja }) {
                     />
                     <Kpi
                         icon={<ArrowTrendingUpIcon className="h-5 w-5" />}
-                        label="Total del día"
+                        label="Total del actual"
                         value={fmtCLP(total)}
                     />
                 </section>
@@ -152,14 +152,14 @@ export default function DetallesCajaModal({ open, onClose, caja }) {
                             )}
                         </div>
                     </div>
-                    <div className="mt-3 w-full h-3 rounded-full bg-gray-100 overflow-hidden">
+                    <div className="mt-3 w-full h-3 rounded-full bg-gray-100 overflow-hidden flex">
                         <div
-                            className="h-3 bg-emerald-500"
+                            className="h-3 bg-emerald-500 transition-all duration-300"
                             style={{ width: `${pctEfectivo}%` }}
                             title={`Efectivo ${pctEfectivo}%`}
                         />
                         <div
-                            className="h-3 bg-indigo-500 -mt-3"
+                            className="h-3 bg-indigo-500 transition-all duration-300"
                             style={{ width: `${pctTarjeta}%` }}
                             title={`Tarjeta ${pctTarjeta}%`}
                         />
