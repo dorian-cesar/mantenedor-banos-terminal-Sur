@@ -1,13 +1,16 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 import Link from 'next/link';
 import { userService } from '@/services/user.service';
 import { FormSkeleton2 } from '@/components/skeletons';
+import { getCurrentUser } from '@/utils/session';
 import { useNotification } from "@/contexts/NotificationContext";
 
-const ROLES = [
+const normalizeRole = (s) => (s || '').toString().trim().toLowerCase();
+
+const ROLES_ALL = [
   { value: 'admin', label: 'Admin' },
   { value: 'supervisor', label: 'Supervisor' },
   { value: 'recaudador', label: 'Recaudador' },
@@ -15,22 +18,49 @@ const ROLES = [
   { value: 'cajero', label: 'Cajero' },
 ];
 
-const normalizeRole = (s) => (s || '').toString().trim().toLowerCase();
-
 export default function EditUserPage() {
   const router = useRouter();
   const params = useParams();
   const id = params?.id;
   const { showNotification } = useNotification();
 
+  const [isAdmin, setIsAdmin] = useState(() => {
+    const u = getCurrentUser();
+    return normalizeRole(u?.role) === 'admin';
+  });
+
   const [form, setForm] = useState(null);
   const [loading, setLoading] = useState(true);
 
+  // Lista de roles visible según isAdmin
+  const ROLES = useMemo(() => {
+    return isAdmin ? ROLES_ALL : ROLES_ALL.filter(r => r.value !== 'admin');
+  }, [isAdmin]);
+
   useEffect(() => {
+    const u = getCurrentUser();
+    setIsAdmin(normalizeRole(u?.role) === 'admin');
+  }, []);
+
+  useEffect(() => {
+    if (!id) return;
+
     const fetchData = async () => {
       try {
         const user = await userService.getById(id);
         const normalizedRole = normalizeRole(user.role);
+
+        if (!isAdmin && normalizedRole === 'admin') {
+          showNotification({
+            type: "error",
+            title: "Acceso denegado",
+            message: "No tienes permisos para ver/editar usuarios administradores.",
+            duration: 5000,
+          });
+          router.push('/dashboard/users');
+          return;
+        }
+
         const roleExists = ROLES.some(r => r.value === normalizedRole);
 
         setForm({
@@ -38,7 +68,7 @@ export default function EditUserPage() {
           username: user.username || '',
           email: user.email || '',
           role: roleExists ? normalizedRole : ROLES[0].value,
-          password: '', // nunca prellenar password
+          password: '', // nunca prellenes password
         });
       } catch (err) {
         showNotification({
@@ -51,8 +81,9 @@ export default function EditUserPage() {
         setLoading(false);
       }
     };
-    if (id) fetchData();
-  }, [id, showNotification]);
+
+    fetchData();
+  }, [id, isAdmin, ROLES, router, showNotification]);
 
   const handleChange = (e) => {
     if (!form) return;
@@ -63,10 +94,23 @@ export default function EditUserPage() {
     e.preventDefault();
     if (!form) return;
 
+    const role = normalizeRole(form.role);
+
+    // Defensa extra: un no-admin no puede asignar "admin"
+    if (!isAdmin && role === 'admin') {
+      showNotification({
+        type: "error",
+        title: "Permiso denegado",
+        message: "No puedes asignar el rol 'admin'.",
+        duration: 5000,
+      });
+      return;
+    }
+
     const payload = {
       username: form.username,
       email: form.email,
-      role: normalizeRole(form.role),
+      role,
     };
     if (form.password && form.password.trim().length > 0) {
       payload.password = form.password.trim();
@@ -124,22 +168,22 @@ export default function EditUserPage() {
           />
         </div>
 
-        {/* Password (opcional) */}
-        <div>
-          <label className="block text-gray-700 font-medium mb-1">Contraseña (dejar en blanco para no cambiar):</label>
-          <input
-            type="password"
-            name="password"
-            value={form.password || ''}
-            onChange={handleChange}
-            className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
-            placeholder="••••••••"
-            minLength={6}
-          />
-          <p className="text-sm text-gray-500 mt-1">Mínimo 6 caracteres si la cambias</p>
-        </div>
-
-        {/* Rol (hardcode) */}
+        {isAdmin && (
+          <div>
+            <label className="block text-gray-700 font-medium mb-1">Contraseña (dejar en blanco para no cambiar):</label>
+            <input
+              type="password"
+              name="password"
+              value={form.password || ''}
+              onChange={handleChange}
+              className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
+              placeholder="••••••••"
+              minLength={6}
+            />
+            <p className="text-sm text-gray-500 mt-1">Mínimo 6 caracteres si la cambias</p>
+          </div>
+        )}
+        {/* Rol */}
         <div>
           <label className="block text-gray-700 font-medium mb-1">Rol:</label>
           <select

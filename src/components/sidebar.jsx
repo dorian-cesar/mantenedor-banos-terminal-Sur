@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from 'next/link';
 import { usePathname } from "next/navigation";
 import {
@@ -13,10 +13,20 @@ import {
     ChevronLeftIcon,
     NewspaperIcon
 } from '@heroicons/react/24/outline';
+import { getCurrentUser } from "@/utils/session";
+
 
 function Sidebar() {
     const [open, setOpen] = useState(true);
     const pathname = usePathname();
+
+    const [isAllowed, setisAllowed] = useState(false);
+
+    useEffect(() => {
+        const u = getCurrentUser();
+        const role = u?.role?.toLowerCase() ?? '';
+        setisAllowed(role === 'admin' || role === 'tesorero');
+    }, []);
 
     const getLinkClasses = (path, exact = false) =>
         `flex items-center p-3 rounded-lg transition-all duration-300 group ${!open ? "justify-center" : ""} ${exact
@@ -78,12 +88,15 @@ function Sidebar() {
                             {open && <span>Aperturas y Cierres</span>}
                         </Link>
                     </li>
-                    <li>
-                        <Link href="/dashboard/folios" className={getLinkClasses("/dashboard/folios")}>
-                            <NewspaperIcon className={`h-5 w-5 text-blue-500 ${open ? "mr-3" : ""}`} />
-                            {open && <span>Solicitar Folios</span>}
-                        </Link>
-                    </li>
+                    {isAllowed && (
+                        <li>
+                            <Link href="/dashboard/folios" className={getLinkClasses("/dashboard/folios")}>
+                                <NewspaperIcon className={`h-5 w-5 text-blue-500 ${open ? "mr-3" : ""}`} />
+                                {open && <span>Solicitar Folios</span>}
+                            </Link>
+                        </li>
+                    )}
+
                 </ul>
             </nav>
 

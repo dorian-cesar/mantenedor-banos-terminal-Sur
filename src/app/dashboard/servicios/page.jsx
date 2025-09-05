@@ -7,6 +7,7 @@ import { TableSkeleton } from '@/components/skeletons';
 import ExportCSVButton from "@/components/ExportCSVButton";
 import { PencilSquareIcon, TrashIcon, ArrowPathIcon } from '@heroicons/react/24/outline';
 import { formatNumber } from '@/utils/helper';
+import { getCurrentUser } from "@/utils/session";
 import { useNotification } from "@/contexts/NotificationContext";
 
 export default function ServicesPage() {
@@ -18,6 +19,8 @@ export default function ServicesPage() {
   const [search, setSearch] = useState('');
   const [total, setTotal] = useState(0);
   const { showNotification } = useNotification();
+  const [isAdmin, setIsAdmin] = useState(false);
+  const [isSupervisor, setIsSupervisor] = useState(false);
 
   const fetchServices = async () => {
     setLoading(true);
@@ -42,6 +45,13 @@ export default function ServicesPage() {
   useEffect(() => {
     fetchServices();
   }, [page, search]);
+
+  useEffect(() => {
+    const u = getCurrentUser();
+    const role = u?.role?.toLowerCase() ?? '';
+    setIsAdmin(role === 'admin');
+    setIsSupervisor(role === 'supervisor' || role === 'admin');
+  }, []);
 
   const handleDelete = async (id) => {
     if (!confirm('¿Estás seguro de eliminar este servicio? Esta acción no se puede deshacer.')) {
@@ -91,12 +101,14 @@ export default function ServicesPage() {
             filters={{ search }}
             service={serviceService}
           />
-          <Link
-            href="/dashboard/servicios/new"
-            className="px-4 py-2 bg-green-600 text-white text-lg font-medium rounded-lg hover:bg-green-800 transition"
-          >
-            Nuevo Servicio
-          </Link>
+          {isAdmin && (
+            <Link
+              href="/dashboard/servicios/new"
+              className="px-4 py-2 bg-green-600 text-white text-lg font-medium rounded-lg hover:bg-green-800 transition"
+            >
+              Nuevo Servicio
+            </Link>
+          )}
         </div>
 
       </div>
@@ -120,7 +132,9 @@ export default function ServicesPage() {
                 <th className="px-4 py-2 text-left text-sm font-medium text-gray-700">Tipo</th>
                 <th className="px-4 py-2 text-left text-sm font-medium text-gray-700">Precio</th>
                 <th className="px-4 py-2 text-left text-sm font-medium text-gray-700">Estado</th>
-                <th className="px-4 py-2 text-left text-sm font-medium text-gray-700">Acciones</th>
+                {isSupervisor && (
+                  <th className="px-4 py-2 text-left text-sm font-medium text-gray-700">Acciones</th>
+                )}
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-100 bg-white">
@@ -138,20 +152,28 @@ export default function ServicesPage() {
                     </span>
                   </td>
 
-                  <td className="px-4 py-2 space-x-2 flex">
-                    <Link
-                      href={`/dashboard/servicios/${s.id}`}
-                      className="h-7 w-7 bg-blue-500 text-white rounded hover:bg-blue-800 transition flex items-center justify-center"
-                    >
-                      <PencilSquareIcon className="h-5 w-5 inline" />
-                    </Link>
-                    <button
-                      onClick={() => handleDelete(s.id)}
-                      className="h-7 w-7 bg-red-500 text-white rounded hover:bg-red-800 transition flex items-center justify-center"
-                    >
-                      <TrashIcon className="h-5 w-5 inline" />
-                    </button>
-                  </td>
+                  {isSupervisor && (
+                    <td className="px-4 py-2 space-x-2 flex">
+                      {isSupervisor && (
+                        <Link
+                          href={`/dashboard/servicios/${s.id}`}
+                          className="h-7 w-7 bg-blue-500 text-white rounded hover:bg-blue-800 transition flex items-center justify-center"
+                        >
+                          <PencilSquareIcon className="h-5 w-5 inline" />
+                        </Link>
+                      )}
+
+                      {isAdmin && (
+                        <button
+                          onClick={() => handleDelete(s.id)}
+                          className="h-7 w-7 bg-red-500 text-white rounded hover:bg-red-800 transition flex items-center justify-center"
+                        >
+                          <TrashIcon className="h-5 w-5 inline" />
+                        </button>
+                      )}
+                    </td>
+                  )}
+
                 </tr>
               ))}
             </tbody>

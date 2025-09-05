@@ -1,38 +1,46 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { userService } from '@/services/user.service';
 import { useNotification } from "@/contexts/NotificationContext";
 import { getCurrentUser } from "@/utils/session";
 
-const ROLES = [
+
+const normalizeRole = (s) => (s || '').toString().trim().toLowerCase();
+
+const ROLES_ALL = [
   { value: 'admin', label: 'Admin' },
   { value: 'supervisor', label: 'Supervisor' },
   { value: 'recaudador', label: 'Recaudador' },
   { value: 'tesorero', label: 'Tesorero' },
   { value: 'cajero', label: 'Cajero' },
 ];
-
-const normalizeRole = (s) => (s || '').toString().trim().toLowerCase();
-
 export default function NewUserPage() {
   const router = useRouter();
   const { showNotification } = useNotification();
+
+  const [isAdmin, setIsAdmin] = useState(() => {
+    const u = getCurrentUser();
+    return normalizeRole(u?.role) === 'admin';
+  });
+
+  const ROLES = useMemo(() => {
+    return isAdmin ? ROLES_ALL : ROLES_ALL.filter(r => r.value !== 'admin');
+  }, [isAdmin]);
+
 
   const [form, setForm] = useState({
     username: '',
     email: '',
     password: '',
-    role: ROLES[0]?.value || ''  // default al primero
+    role: ''
   });
-
-  const [canEdit, setCanEdit] = useState(false);
 
   useEffect(() => {
     const u = getCurrentUser();
-    setCanEdit(!!u && u.role === "admin");
+    setIsAdmin(normalizeRole(u?.role) === 'admin');
   }, []);
 
   const handleChange = (e) =>

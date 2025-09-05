@@ -5,6 +5,7 @@ import { cajaService } from '@/services/caja.service';
 import { TableSkeleton } from '@/components/skeletons';
 import ExportCSVButton from "@/components/ExportCSVButton";
 import { PencilSquareIcon, TrashIcon, ArrowPathIcon } from '@heroicons/react/24/outline';
+import { getCurrentUser } from "@/utils/session";
 import { useNotification } from "@/contexts/NotificationContext";
 
 export default function CajasPage() {
@@ -16,6 +17,7 @@ export default function CajasPage() {
   const [search, setSearch] = useState('');
   const [total, setTotal] = useState(0);
   const { showNotification } = useNotification();
+  const [isAdmin, setIsAdmin] = useState(false);
 
   const fetchCajas = async () => {
     setLoading(true);
@@ -40,6 +42,12 @@ export default function CajasPage() {
   useEffect(() => {
     fetchCajas();
   }, [page, search]);
+
+  useEffect(() => {
+    const u = getCurrentUser();
+    const role = u?.role?.toLowerCase() ?? '';
+    setIsAdmin(role === 'admin');
+  }, []);
 
   const handleDelete = async (id) => {
     if (!confirm('¿Estás seguro de eliminar esta caja? Esta acción no se puede deshacer.')) {
@@ -77,7 +85,7 @@ export default function CajasPage() {
         <div className="flex space-x-2 items-center">
           <h1 className="text-3xl font-bold text-gray-800">Gestión de Cajas</h1>
           <button className='p-2 bg-blue-500 text-white rounded-full hover:bg-blue-800 transition flex items-center justify-center'
-          onClick={() => fetchCajas()}>
+            onClick={() => fetchCajas()}>
             <ArrowPathIcon className="h-6 w-6" />
           </button>
         </div>
@@ -87,9 +95,11 @@ export default function CajasPage() {
             filters={{ search }}
             service={cajaService}
           />
-          <Link href="/dashboard/cajas/new" className="px-4 py-2 bg-green-600 text-white text-lg font-medium rounded-lg hover:bg-green-800 transition">
-            Nueva Caja
-          </Link>
+          {isAdmin && (
+            <Link href="/dashboard/cajas/new" className="px-4 py-2 bg-green-600 text-white text-lg font-medium rounded-lg hover:bg-green-800 transition">
+              Nueva Caja
+            </Link>
+          )}
         </div>
 
       </div>
@@ -109,7 +119,9 @@ export default function CajasPage() {
                 <th className="px-4 py-2 text-left text-sm font-medium text-gray-700">Ubicación</th>
                 <th className="px-4 py-2 text-left text-sm font-medium text-gray-700">Estado</th>
                 <th className="px-4 py-2 text-left text-sm font-medium text-gray-700">Estado Apertura</th>
-                <th className="px-4 py-2 text-left text-sm font-medium text-gray-700">Acciones</th>
+                {isAdmin && (
+                  <th className="px-4 py-2 text-left text-sm font-medium text-gray-700">Acciones</th>
+                )}
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-100 bg-white">
@@ -137,21 +149,23 @@ export default function CajasPage() {
                       {caja.estado_apertura}
                     </span>
                   </td>
+                  {isAdmin && (
+                    <td className="px-4 py-2 space-x-2 flex">
+                      <Link
+                        href={`/dashboard/cajas/${caja.id}`}
+                        className="h-7 w-7 bg-blue-500 text-white rounded hover:bg-blue-800 transition flex items-center justify-center"
+                      >
+                        <PencilSquareIcon className="h-5 w-5 inline" />
+                      </Link>
+                      <button
+                        onClick={() => handleDelete(caja.id)}
+                        className="h-7 w-7 bg-red-500 text-white rounded hover:bg-red-800 transition flex items-center justify-center"
+                      >
+                        <TrashIcon className="h-5 w-5 inline" />
+                      </button>
+                    </td>
+                  )}
 
-                  <td className="px-4 py-2 space-x-2 flex">
-                    <Link
-                      href={`/dashboard/cajas/${caja.id}`}
-                      className="h-7 w-7 bg-blue-500 text-white rounded hover:bg-blue-800 transition flex items-center justify-center"
-                    >
-                      <PencilSquareIcon className="h-5 w-5 inline" />
-                    </Link>
-                    <button
-                      onClick={() => handleDelete(caja.id)}
-                      className="h-7 w-7 bg-red-500 text-white rounded hover:bg-red-800 transition flex items-center justify-center"
-                    >
-                      <TrashIcon className="h-5 w-5 inline" />
-                    </button>
-                  </td>
                 </tr>
               ))}
             </tbody>

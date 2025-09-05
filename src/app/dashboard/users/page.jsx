@@ -1,6 +1,6 @@
 'use client';
 import Link from 'next/link';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { TableSkeleton } from '@/components/skeletons';
 import ExportCSVButton from "@/components/ExportCSVButton";
 import { PencilSquareIcon, TrashIcon, ArrowPathIcon } from '@heroicons/react/24/outline';
@@ -16,6 +16,9 @@ export default function UsersPage() {
   const [pageSize] = useState(10);
   const [search, setSearch] = useState('');
   const [total, setTotal] = useState(0);
+  const [canEdit, setCanEdit] = useState(false);
+  const [isAdmin, setIsAdmin] = useState(false);
+  const [currentUser, setCurrentUser] = useState(null);
   const { showNotification } = useNotification();
 
   const fetchUsers = async () => {
@@ -27,12 +30,7 @@ export default function UsersPage() {
       setTotal(res.total);
     } catch (err) {
       setError(err.message || 'Error al cargar usuarios');
-      showNotification({
-        type: "error",
-        title: "Error",
-        message: 'Error al cargar usuarios',
-        duration: 5000
-      });
+      showNotification({ type: "error", title: "Error", message: 'Error al cargar usuarios', duration: 5000 });
     } finally {
       setLoading(false);
     }
@@ -42,65 +40,63 @@ export default function UsersPage() {
     fetchUsers();
   }, [page, search]);
 
+  useEffect(() => {
+    const u = getCurrentUser();
+    setCurrentUser(u);
+    const role = u?.role?.toLowerCase() ?? '';
+    setIsAdmin(role === 'admin');
+    setCanEdit(role === 'admin' || role === 'supervisor');
+  }, []);
+
+  // ⬇️ Aplica el filtro de visibilidad: si NO es admin, oculta usuarios con rol admin
+  const visibleUsers = useMemo(() => {
+    const base = users.filter(u => Number(u.id) !== 1); // tu filtro de siempre
+    if (isAdmin) return base;
+    return base.filter(u => (u.role || '').toLowerCase() !== 'admin');
+  }, [users, isAdmin]);
+
+  // Paginación: si filtras en cliente, usa el total *visible*
+  const totalVisible = isAdmin ? total : visibleUsers.length;
+  const pageCount = Math.max(1, Math.ceil(totalVisible / pageSize));
+  const disableNext = page >= pageCount;
+
   const handleDelete = async (id) => {
     if (!confirm('¿Estás seguro de eliminar este usuario? Esta acción no se puede deshacer.')) {
-      showNotification({
-        type: "info",
-        title: "Cancelado",
-        message: "La eliminación fue cancelada",
-        duration: 5000
-      });
+      showNotification({ type: "info", title: "Cancelado", message: "La eliminación fue cancelada", duration: 5000 });
       return;
     }
     try {
       await userService.delete(id);
       fetchUsers();
-      showNotification({
-        type: "success",
-        title: "Usuario eliminado",
-        message: "El usuario se ha eliminado correctamente",
-        duration: 5000
-      });
+      showNotification({ type: "success", title: "Usuario eliminado", message: "El usuario se ha eliminado correctamente", duration: 5000 });
     } catch (err) {
       setError(err.message || 'Error al eliminar usuario');
-      showNotification({
-        type: "error",
-        title: "Error al eliminar",
-        message: err.message || 'Error al eliminar usuario',
-        duration: 5000
-      });
+      showNotification({ type: "error", title: "Error al eliminar", message: err.message || 'Error al eliminar usuario', duration: 5000 });
     }
   };
 
-  const currentUser = getCurrentUser();
-
   return (
     <div className="p-6">
+      {/* header */}
       <div className="flex items-center justify-between mb-4">
         <div className="flex space-x-2 items-center">
           <h1 className="text-3xl font-bold text-gray-800">Gestión de Usuarios</h1>
           <button className='p-2 bg-blue-500 text-white rounded-full hover:bg-blue-800 transition flex items-center justify-center'
-            onClick={() => fetchUsers()}>
+            onClick={fetchUsers}>
             <ArrowPathIcon className="h-6 w-6" />
           </button>
         </div>
         <div className="flex space-x-2">
-          <ExportCSVButton
-            filename="usuarios.csv"
-            filters={{ search }}
-            service={userService}
-          />
-
-          <Link
-            href="/dashboard/users/new"
-            className="px-4 py-2 bg-green-600 text-white text-lg font-medium rounded-lg hover:bg-green-800 transition"
-          >
-            Nuevo Usuario
-          </Link>
+          <ExportCSVButton filename="usuarios.csv" filters={{ search }} service={userService} />
+          {canEdit && (
+            <Link href="/dashboard/users/new" className="px-4 py-2 bg-green-600 text-white text-lg font-medium rounded-lg hover:bg-green-800 transition">
+              Nuevo Usuario
+            </Link>
+          )}
         </div>
       </div>
 
-      {/* Barra de búsqueda */}
+      {/* búsqueda */}
       <div>
         <input
           type="text"
@@ -122,18 +118,19 @@ export default function UsersPage() {
                 <th className="px-4 py-2 text-left text-sm font-medium text-gray-700">Username</th>
                 <th className="px-4 py-2 text-left text-sm font-medium text-gray-700">Email</th>
                 <th className="px-4 py-2 text-left text-sm font-medium text-gray-700">Rol</th>
-                <th className="px-4 py-2 text-left text-sm font-medium text-gray-700">Acciones</th>
+                {canEdit && <th className="px-4 py-2 text-left text-sm font-medium text-gray-700">Acciones</th>}
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-100 bg-white">
-              {users.filter(u => Number(u.id) !== 1).map((u) => (
-                  <tr key={u.id} className="hover:bg-gray-200">
-                    <td className="px-4 py-2">{u.id}</td>
-                    <td className="px-4 py-2">{u.username}</td>
-                    <td className="px-4 py-2">{u.email}</td>
-                    <td className="px-4 py-2 capitalize">{u.role}</td>
+              {visibleUsers.map((u) => (
+                <tr key={u.id} className="hover:bg-gray-200">
+                  <td className="px-4 py-2">{u.id}</td>
+                  <td className="px-4 py-2">{u.username}</td>
+                  <td className="px-4 py-2">{u.email}</td>
+                  <td className="px-4 py-2 capitalize">{u.role}</td>
+                  {canEdit && (
                     <td className="px-4 py-2 space-x-2 flex">
-                      {u.id !== currentUser.id && (
+                      {u.id !== currentUser?.id && (
                         <Link
                           href={`/dashboard/users/${u.id}`}
                           className="h-7 w-7 bg-blue-500 text-white rounded hover:bg-blue-800 transition flex items-center justify-center"
@@ -141,7 +138,7 @@ export default function UsersPage() {
                           <PencilSquareIcon className="h-5 w-5 inline" />
                         </Link>
                       )}
-                      {u.id !== currentUser.id && (
+                      {u.id !== currentUser?.id && (
                         <button
                           onClick={() => handleDelete(u.id)}
                           className="h-7 w-7 bg-red-500 text-white rounded hover:bg-red-800 transition flex items-center justify-center"
@@ -150,12 +147,13 @@ export default function UsersPage() {
                         </button>
                       )}
                     </td>
-                  </tr>
-                ))}
+                  )}
+                </tr>
+              ))}
             </tbody>
           </table>
 
-          {/* Paginación */}
+          {/* Paginación (usa totalVisible si filtras en cliente) */}
           <div className="mt-4 flex items-center justify-center space-x-4">
             <button
               disabled={page <= 1}
@@ -165,10 +163,10 @@ export default function UsersPage() {
               Anterior
             </button>
             <span className="text-gray-700">
-              Página {page} de {Math.ceil(total / pageSize)}
+              Página {page} de {pageCount}
             </span>
             <button
-              disabled={page * pageSize >= total}
+              disabled={disableNext}
               onClick={() => setPage(page + 1)}
               className="px-4 py-2 rounded bg-gray-200 hover:bg-gray-400 disabled:opacity-50 transition"
             >
@@ -177,7 +175,6 @@ export default function UsersPage() {
           </div>
         </div>
       )}
-
     </div>
   );
 }
