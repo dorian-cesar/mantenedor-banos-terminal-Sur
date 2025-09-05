@@ -57,7 +57,7 @@ export function DashboardSkeleton() {
 
 export function DashboardSkeleton1() {
   return (
-    <div className="p-6 space-y-6">
+    <div className="space-y-6">
 
       {/* 4 Cards */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
@@ -71,7 +71,7 @@ export function DashboardSkeleton1() {
 
 export function DashboardSkeleton2() {
   return (
-    <div className="p-6 space-y-6">
+    <div className="space-y-6">
       {/* Título */}
 
       <div className={`h-40 w-full bg-gray-200 rounded-xl ${shimmer}`}></div>
