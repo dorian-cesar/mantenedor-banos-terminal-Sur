@@ -1,6 +1,6 @@
 'use client';
 import Link from 'next/link';
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect } from 'react';
 import { TableSkeleton } from '@/components/skeletons';
 import ExportCSVButton from "@/components/ExportCSVButton";
 import { PencilSquareIcon, TrashIcon, ArrowPathIcon } from '@heroicons/react/24/outline';
@@ -27,7 +27,7 @@ export default function UsersPage() {
     try {
       const res = await userService.list({ page, pageSize, search });
       setUsers(res.data);
-      setTotal(res.total);
+      setTotal(res.total);  // <-- usa el total del backend
     } catch (err) {
       setError(err.message || 'Error al cargar usuarios');
       showNotification({ type: "error", title: "Error", message: 'Error al cargar usuarios', duration: 5000 });
@@ -38,7 +38,12 @@ export default function UsersPage() {
 
   useEffect(() => {
     fetchUsers();
-  }, [page, search]);
+  }, [page, search]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  // Resetear a página 1 cuando cambie el search (evita páginas vacías)
+  useEffect(() => {
+    setPage(1);
+  }, [search]);
 
   useEffect(() => {
     const u = getCurrentUser();
@@ -48,16 +53,8 @@ export default function UsersPage() {
     setCanEdit(role === 'admin' || role === 'supervisor');
   }, []);
 
-  // ⬇️ Aplica el filtro de visibilidad: si NO es admin, oculta usuarios con rol admin
-  const visibleUsers = useMemo(() => {
-    const base = users.filter(u => Number(u.id) !== 1); // tu filtro de siempre
-    if (isAdmin) return base;
-    return base.filter(u => (u.role || '').toLowerCase() !== 'admin');
-  }, [users, isAdmin]);
-
-  // Paginación: si filtras en cliente, usa el total *visible*
-  const totalVisible = isAdmin ? total : visibleUsers.length;
-  const pageCount = Math.max(1, Math.ceil(totalVisible / pageSize));
+  // Paginación 100% basada en backend
+  const pageCount = Math.max(1, Math.ceil(total / pageSize));
   const disableNext = page >= pageCount;
 
   const handleDelete = async (id) => {
@@ -81,8 +78,11 @@ export default function UsersPage() {
       <div className="flex items-center justify-between mb-4">
         <div className="flex space-x-2 items-center">
           <h1 className="text-3xl font-bold text-gray-800">Gestión de Usuarios</h1>
-          <button className='p-2 bg-blue-500 text-white rounded-full hover:bg-blue-800 transition flex items-center justify-center'
-            onClick={fetchUsers}>
+          <button
+            className='p-2 bg-blue-500 text-white rounded-full hover:bg-blue-800 transition flex items-center justify-center'
+            onClick={fetchUsers}
+            title="Actualizar"
+          >
             <ArrowPathIcon className="h-6 w-6" />
           </button>
         </div>
@@ -122,7 +122,7 @@ export default function UsersPage() {
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-100 bg-white">
-              {visibleUsers.map((u) => (
+              {users.map((u) => (
                 <tr key={u.id} className="hover:bg-gray-200">
                   <td className="px-4 py-2">{u.id}</td>
                   <td className="px-4 py-2">{u.username}</td>
@@ -134,6 +134,7 @@ export default function UsersPage() {
                         <Link
                           href={`/dashboard/users/${u.id}`}
                           className="h-7 w-7 bg-blue-500 text-white rounded hover:bg-blue-800 transition flex items-center justify-center"
+                          title="Editar"
                         >
                           <PencilSquareIcon className="h-5 w-5 inline" />
                         </Link>
@@ -142,6 +143,7 @@ export default function UsersPage() {
                         <button
                           onClick={() => handleDelete(u.id)}
                           className="h-7 w-7 bg-red-500 text-white rounded hover:bg-red-800 transition flex items-center justify-center"
+                          title="Eliminar"
                         >
                           <TrashIcon className="h-5 w-5 inline" />
                         </button>
@@ -153,11 +155,11 @@ export default function UsersPage() {
             </tbody>
           </table>
 
-          {/* Paginación (usa totalVisible si filtras en cliente) */}
+          {/* Paginación basada en `total` del backend */}
           <div className="mt-4 flex items-center justify-center space-x-4">
             <button
               disabled={page <= 1}
-              onClick={() => setPage(page - 1)}
+              onClick={() => setPage(p => Math.max(1, p - 1))}
               className="px-4 py-2 rounded bg-gray-200 hover:bg-gray-400 disabled:opacity-50 transition"
             >
               Anterior
@@ -167,7 +169,7 @@ export default function UsersPage() {
             </span>
             <button
               disabled={disableNext}
-              onClick={() => setPage(page + 1)}
+              onClick={() => setPage(p => p + 1)}
               className="px-4 py-2 rounded bg-gray-200 hover:bg-gray-400 disabled:opacity-50 transition"
             >
               Siguiente
