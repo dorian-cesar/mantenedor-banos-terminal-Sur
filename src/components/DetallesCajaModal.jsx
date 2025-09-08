@@ -10,18 +10,15 @@ import {
     UserIcon,
     InformationCircleIcon,
 } from "@heroicons/react/24/outline";
+import Modal from '@/components/ui/modal';
+import { Info } from '@/components/ui/info';
+import { Kpi } from '@/components/ui/kpi';
+import { EstadoPill } from '@/components/ui/estadoPill';
+import { formatFecha, toNumber, fmtCLP, fmt } from "@/utils/helper";
 
-/** Helpers locales */
-const toNumber = (v) => {
-    const n = Number(v);
-    return Number.isFinite(n) ? n : 0;
-};
-const fmtCLP = (v) => `$${toNumber(v).toLocaleString("es-CL")}`;
-const fmt = (v, fallback = "—") => (v ? v : fallback);
 
 export default function DetallesCajaModal({ open, onClose, caja }) {
     if (!caja) return null;
-
     const nombreUsuario = caja?.apertura?.usuario?.nombre ?? "—";
     const emailUsuario = caja?.apertura?.usuario?.email ?? null;
 
@@ -29,6 +26,11 @@ export default function DetallesCajaModal({ open, onClose, caja }) {
         ? new Date(caja.apertura.fecha).toLocaleDateString("es-CL")
         : "—";
     const horaApertura = caja?.apertura?.hora ?? "—";
+
+    const fechaCierre = caja?.cierre?.fecha
+        ? new Date(caja.cierre.fecha).toLocaleDateString("es-CL")
+        : "—";
+    const horaCierre = caja?.cierre?.hora ?? "—";
 
     // Cálculos
     const efectivo = toNumber(caja.efectivo);
@@ -51,6 +53,8 @@ export default function DetallesCajaModal({ open, onClose, caja }) {
 
     const estadoApertura = (caja.estado_apertura || "").toLowerCase(); // abierta | cerrada
     const estadoCaja = (caja.estado_caja || "").toLowerCase(); // activa | inactiva
+
+    const isClosed = (caja.estado_apertura || "").toLowerCase() === "cerrada";
 
     return (
         <Modal
@@ -83,8 +87,17 @@ export default function DetallesCajaModal({ open, onClose, caja }) {
                     </div>
                     <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                         <Info label="Cajero (apertura)" value={nombreUsuario} />
-                        <Info label="Fecha apertura" value={fechaApertura} />
-                        <Info label="Hora apertura" value={horaApertura} />
+                        {isClosed ? (
+                            <>
+                                <Info label="Fecha cierre" value={fechaCierre} />
+                                <Info label="Hora cierre" value={horaCierre} />
+                            </>
+                        ) : (
+                            <>
+                                <Info label="Fecha apertura" value={fechaApertura} />
+                                <Info label="Hora apertura" value={horaApertura} />
+                            </>
+                        )}
                     </div>
                     {emailUsuario && (
                         <div className="mt-2 text-gray-600 flex gap-1">
@@ -115,7 +128,7 @@ export default function DetallesCajaModal({ open, onClose, caja }) {
                     />
                     <Kpi
                         icon={<ArrowTrendingUpIcon className="h-5 w-5" />}
-                        label="Total del actual"
+                        label="Total actual"
                         value={fmtCLP(total)}
                     />
                 </section>
@@ -178,8 +191,23 @@ export default function DetallesCajaModal({ open, onClose, caja }) {
 
                 {/* Rango de transacciones */}
                 <section className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                    <Info label="Primera transacción" value={fmt(caja.primera_transaccion)} />
-                    <Info label="Última transacción" value={fmt(caja.ultima_transaccion)} />
+                    <Info
+                        label="Primera transacción"
+                        value={
+                            caja.fecha_primera_transaccion
+                                ? `${formatFecha(caja.fecha_primera_transaccion)} ${fmt(caja.primera_transaccion)}`
+                                : "—"
+                        }
+                    />
+                    <Info
+                        label="Última transacción"
+                        value={
+                            caja.fecha_ultima_transaccion
+                                ? `${formatFecha(caja.fecha_ultima_transaccion)} ${fmt(caja.ultima_transaccion)}`
+                                : "—"
+                        }
+                    />
+
                     <Info
                         label="Estado"
                         value={
@@ -207,125 +235,5 @@ export default function DetallesCajaModal({ open, onClose, caja }) {
                 )}
             </div>
         </Modal>
-    );
-}
-
-/* -------------------------
-   Modal interno (con Portal)
--------------------------- */
-function Modal({ open, onClose, title, children }) {
-    const dialogRef = useRef(null);
-    const closeBtnRef = useRef(null);
-    const [mounted, setMounted] = useState(false);
-
-    useEffect(() => { setMounted(true); }, []);
-
-    // Cerrar con ESC
-    useEffect(() => {
-        if (!open) return;
-        const onKey = (e) => e.key === "Escape" && onClose?.();
-        window.addEventListener("keydown", onKey);
-        return () => window.removeEventListener("keydown", onKey);
-    }, [open, onClose]);
-
-    // Enfocar botón y bloquear scroll del body
-    useEffect(() => {
-        if (!open) return;
-        const t = setTimeout(() => closeBtnRef.current?.focus(), 0);
-        const original = document.body.style.overflow;
-        document.body.style.overflow = "hidden";
-        return () => { clearTimeout(t); document.body.style.overflow = original; };
-    }, [open]);
-
-    if (!open || !mounted) return null;
-
-    const overlay = (
-        <div
-            ref={dialogRef}
-            onMouseDown={(e) => { if (e.target === dialogRef.current) onClose?.(); }}
-            className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/40 backdrop-blur-sm"
-            aria-modal="true"
-            role="dialog"
-            aria-labelledby="modal-title"
-        >
-            <div className="m-4 sm:m-6 w-full max-w-2xl bg-white shadow-xl ring-1 ring-black/5 rounded-2xl flex flex-col">
-                {/* Header */}
-                <div className="flex items-center justify-between px-5 py-4 border-b shrink-0">
-                    <h2 id="modal-title" className="text-lg font-semibold text-gray-900">{title}</h2>
-                    <button
-                        ref={closeBtnRef}
-                        onClick={onClose}
-                        className="rounded-md px-2 py-1 text-sm text-gray-600 hover:bg-gray-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
-                        aria-label="Cerrar modal"
-                    >
-                        ✕
-                    </button>
-                </div>
-                {/* Body */}
-                <div className="px-5 py-4 max-h-[70vh] overflow-auto">
-                    {children}
-                </div>
-                {/* Footer */}
-                <div className="flex justify-end gap-2 px-5 py-4 border-t shrink-0">
-                    <button
-                        onClick={onClose}
-                        className="rounded-lg px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
-                    >
-                        Cerrar
-                    </button>
-                </div>
-            </div>
-        </div>
-    );
-
-    return createPortal(overlay, document.body);
-}
-
-/* -------------------------
-   Subcomponentes
--------------------------- */
-function Info({ label, value }) {
-    return (
-        <div>
-            <div className="text-base font-medium text-gray-500">{label}</div>
-            <div className="mt-0.5 text-gray-900 font-semibold">{typeof value === "string" || typeof value === "number" ? value : value}</div>
-        </div>
-    );
-}
-
-function Kpi({ icon, label, value, hint, subtle = false, tone = "default" }) {
-    const toneClasses = {
-        default: "border bg-white",
-        warning: "border bg-amber-100",
-        success: "border bg-emerald-100",
-    };
-    return (
-        <div className={`rounded-xl px-3 py-3 ${toneClasses[tone]}`}>
-            <div className="flex items-center gap-2 text-gray-600">
-                {icon || null}
-                <span className="text-xs">{label}</span>
-            </div>
-            <div className={`mt-1 text-base font-semibold ${subtle ? "text-gray-700" : "text-gray-900"}`}>{value}</div>
-            {hint && <div className="mt-0.5 text-xs text-gray-500">{hint}</div>}
-        </div>
-    );
-}
-
-function EstadoPill({ value, type }) {
-    // type: "apertura" | "caja"
-    const v = (value || "").toLowerCase();
-    let text = v || "—";
-    let cls = "bg-gray-100 text-gray-700";
-    if (type === "apertura") {
-        if (v === "abierta") cls = "bg-blue-500 text-white";
-        if (v === "cerrada") cls = "bg-red-500 text-white";
-    } else if (type === "caja") {
-        if (v === "activa") cls = "bg-green-500 text-white";
-        if (v === "inactiva") cls = "bg-gray-200 text-white";
-    }
-    return (
-        <span className={`inline-flex items-center rounded-full px-2 py-0.5 text-sm font-medium ${cls}`}>
-            {type === "apertura" ? "Apertura:" : "Caja:"} {text}
-        </span>
     );
 }

@@ -6,7 +6,7 @@ import { useNotification } from "@/contexts/NotificationContext";
 import { DashboardSkeleton, DashboardSkeleton1, DashboardSkeleton2 } from '@/components/skeletons';
 import { CardResumen } from "@/components/Card";
 import CajaCard from '@/components/CajaCard';
-import DetallesCajaModal from '@/components/modal';
+import DetallesCajaModal from '@/components/DetallesCajaModal';
 import {
   UsersIcon, ComputerDesktopIcon, WrenchScrewdriverIcon, ArrowsRightLeftIcon, ArrowPathIcon, ArrowUturnLeftIcon, ExclamationCircleIcon, CalendarDaysIcon
 } from '@heroicons/react/24/outline';

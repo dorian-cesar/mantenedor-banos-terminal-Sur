@@ -8,11 +8,14 @@ export default function HomePage() {
   const router = useRouter();
   const { showNotification } = useNotification();
   const [loading, setLoading] = useState(false);
+  const ALLOWED_ROLES = ["admin", "supervisor", "recaudador", "tesorero"];
+  const isAllowed = (role) => ALLOWED_ROLES.includes((role || "").toLowerCase());
+
 
   useEffect(() => {
     const user = getCurrentUser();
     if (user && !isTokenExpired()) {
-      if (user.role?.toLowerCase() === "admin") {
+      if (isAllowed(user.role)) {
         showNotification({
           type: "success",
           title: "Sesión Activa",

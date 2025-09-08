@@ -7,6 +7,7 @@ import { authService } from "@/services/auth.service";
 import { saveSession, isTokenExpired, getCurrentUser } from "@/utils/session";
 import { useNotification } from "@/contexts/NotificationContext";
 import { LockClosedIcon, EnvelopeIcon, EyeIcon, EyeSlashIcon } from "@heroicons/react/24/outline";
+import Modal from '@/components/ui/modal';
 
 export default function LoginPage() {
     const router = useRouter();
@@ -16,11 +17,13 @@ export default function LoginPage() {
     const [showPassword, setShowPassword] = useState(false);
     const { showNotification } = useNotification();
 
+    const ALLOWED_ROLES = ["admin", "supervisor", "recaudador", "tesorero"];
+    const isAllowed = (role) => ALLOWED_ROLES.includes((role || "").toLowerCase());
 
     useEffect(() => {
         const user = getCurrentUser();
         if (user && !isTokenExpired()) {
-            if (user.role?.toLowerCase() === "admin") {
+            if (isAllowed(user.role)) {
                 showNotification({
                     type: "success",
                     title: "Sesión Activa",
@@ -83,8 +86,8 @@ export default function LoginPage() {
                 message: `Bienvenido ${data.user.username}`,
                 duration: 5000
             });
-
-            router.push("/dashboard");
+            router.replace('/dashboard');
+            
         } catch (err) {
             let errorMessage = "Error al iniciar sesión";
 
