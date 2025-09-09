@@ -50,7 +50,7 @@ export default function UsersPage() {
     setCurrentUser(u);
     const role = u?.role?.toLowerCase() ?? '';
     setIsAdmin(role === 'admin');
-    setCanEdit(role === 'admin' || role === 'supervisor');
+    setCanEdit(role === 'admin' || role === 'tesorero');
   }, []);
 
   // Paginación 100% basada en backend

@@ -50,7 +50,7 @@ export default function ServicesPage() {
     const u = getCurrentUser();
     const role = u?.role?.toLowerCase() ?? '';
     setIsAdmin(role === 'admin');
-    setIsSupervisor(role === 'supervisor' || role === 'admin');
+    setIsSupervisor(role === 'tesorero' || role === 'admin');
   }, []);
 
   const handleDelete = async (id) => {
@@ -131,7 +131,7 @@ export default function ServicesPage() {
                 <th className="px-4 py-2 text-left text-sm font-medium text-gray-700">Nombre</th>
                 <th className="px-4 py-2 text-left text-sm font-medium text-gray-700">Tipo</th>
                 <th className="px-4 py-2 text-left text-sm font-medium text-gray-700">Precio</th>
-                <th className="px-4 py-2 text-left text-sm font-medium text-gray-700">Estado</th>
+                {/*<th className="px-4 py-2 text-left text-sm font-medium text-gray-700">Estado</th>*/}
                 {isSupervisor && (
                   <th className="px-4 py-2 text-left text-sm font-medium text-gray-700">Acciones</th>
                 )}
@@ -143,6 +143,7 @@ export default function ServicesPage() {
                   <td className="px-4 py-2">{s.nombre}</td>
                   <td className="px-4 py-2 capitalize">{s.tipo.toLowerCase()}</td>
                   <td className="px-4 py-2">${formatNumber(s.precio)}</td>
+                  {/*
                   <td className="px-4 py-2 capitalize">
                     <span
                       className={`px-2 py-1 rounded text-white text-xs font-semibold
@@ -151,6 +152,7 @@ export default function ServicesPage() {
                       {s.estado.toLowerCase()}
                     </span>
                   </td>
+                  */}
 
                   {isSupervisor && (
                     <td className="px-4 py-2 space-x-2 flex">

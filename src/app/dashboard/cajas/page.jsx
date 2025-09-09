@@ -117,7 +117,7 @@ export default function CajasPage() {
                 <th className="px-4 py-2 text-left text-sm font-medium text-gray-700">Número</th>
                 <th className="px-4 py-2 text-left text-sm font-medium text-gray-700">Nombre</th>
                 <th className="px-4 py-2 text-left text-sm font-medium text-gray-700">Ubicación</th>
-                <th className="px-4 py-2 text-left text-sm font-medium text-gray-700">Estado</th>
+                {/*<th className="px-4 py-2 text-left text-sm font-medium text-gray-700">Estado</th>*/}
                 <th className="px-4 py-2 text-left text-sm font-medium text-gray-700">Estado Apertura</th>
                 {isAdmin && (
                   <th className="px-4 py-2 text-left text-sm font-medium text-gray-700">Acciones</th>
@@ -132,6 +132,7 @@ export default function CajasPage() {
                   <td className="px-4 py-2">{caja.nombre}</td>
                   <td className="px-4 py-2">{caja.ubicacion}</td>
 
+                  {/* 
                   <td className="px-4 py-2">
                     <span
                       className={`px-2 py-1 rounded text-white text-xs font-semibold
@@ -140,7 +141,7 @@ export default function CajasPage() {
                       {caja.estado_caja}
                     </span>
                   </td>
-
+                  */}
                   <td className="px-4 py-2">
                     <span
                       className={`px-2 py-1 rounded text-white text-xs font-semibold
