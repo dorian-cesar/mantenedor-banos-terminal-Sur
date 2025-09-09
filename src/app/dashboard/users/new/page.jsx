@@ -126,6 +126,7 @@ export default function NewUserPage() {
             className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
             required
           >
+            <option value="" disabled hidden>Selecciona un rol</option>
             {ROLES.map(r => (
               <option key={r.value} value={r.value}>
                 {r.label}
