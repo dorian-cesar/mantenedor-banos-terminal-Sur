@@ -167,7 +167,7 @@ export default function EditUserPage() {
             className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
           />
         </div>
-
+        {/*
         {isAdmin && (
           <div>
             <label className="block text-gray-700 font-medium mb-1">Contraseña (dejar en blanco para no cambiar):</label>
@@ -183,6 +183,7 @@ export default function EditUserPage() {
             <p className="text-sm text-gray-500 mt-1">Mínimo 6 caracteres si la cambias</p>
           </div>
         )}
+          */}
         {/* Rol */}
         <div>
           <label className="block text-gray-700 font-medium mb-1">Rol:</label>
