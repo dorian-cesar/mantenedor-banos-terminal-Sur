@@ -274,73 +274,77 @@ export default function CierresPage() {
       </div>
 
       {loading && <TableSkeleton rows={10} cols={10} />}
-        <div className="overflow-x-auto">
-          <table className="min-w-full border border-gray-200 divide-y divide-gray-200">
-            <thead className="bg-gray-100">
+      <div className="overflow-x-auto">
+        <table className="min-w-full border border-gray-200 divide-y divide-gray-200">
+          <thead className="bg-gray-100">
+            <tr>
+              <th className="px-4 py-2 text-left text-sm font-medium text-gray-700">ID</th>
+              <th className="px-4 py-2 text-left text-sm font-medium text-gray-700">Caja</th>
+              <th className="px-4 py-2 text-left text-sm font-medium text-gray-700">Usuario Apertura</th>
+              <th className="px-4 py-2 text-left text-sm font-medium text-gray-700">Fecha</th>
+              <th className="px-4 py-2 text-left text-sm font-medium text-gray-700">Hora Apertura</th>
+              <th className="px-4 py-2 text-left text-sm font-medium text-gray-700">Hora Cierre</th>
+              <th className="px-4 py-2 text-left text-sm font-medium text-gray-700">Monto Inicial</th>
+              <th className="px-4 py-2 text-left text-sm font-medium text-gray-700">Total Efectivo</th>
+              <th className="px-4 py-2 text-left text-sm font-medium text-gray-700">Total Tarjeta</th>
+              <th className="px-4 py-2 text-left text-sm font-medium text-gray-700">Total Venta</th>
+              <th className="px-4 py-2 text-left text-sm font-medium text-gray-700">Total General</th>
+              <th className="px-4 py-2 text-left text-sm font-medium text-gray-700">Estado</th>
+              {/* <th className="px-4 py-2 text-left text-sm font-medium text-gray-700">Acciones</th> */}
+            </tr>
+          </thead>
+          <tbody className="divide-y divide-gray-100 bg-white">
+            {cierres.length === 0 ? (
               <tr>
-                <th className="px-4 py-2 text-left text-sm font-medium text-gray-700">ID</th>
-                <th className="px-4 py-2 text-left text-sm font-medium text-gray-700">Caja</th>
-                <th className="px-4 py-2 text-left text-sm font-medium text-gray-700">Usuario Apertura</th>
-                <th className="px-4 py-2 text-left text-sm font-medium text-gray-700">Fecha</th>
-                <th className="px-4 py-2 text-left text-sm font-medium text-gray-700">Hora Apertura</th>
-                <th className="px-4 py-2 text-left text-sm font-medium text-gray-700">Hora Cierre</th>
-                <th className="px-4 py-2 text-left text-sm font-medium text-gray-700">Monto Inicial</th>
-                <th className="px-4 py-2 text-left text-sm font-medium text-gray-700">Total Efectivo</th>
-                <th className="px-4 py-2 text-left text-sm font-medium text-gray-700">Total Tarjeta</th>
-                <th className="px-4 py-2 text-left text-sm font-medium text-gray-700">Total General</th>
-                <th className="px-4 py-2 text-left text-sm font-medium text-gray-700">Estado</th>
-                {/* <th className="px-4 py-2 text-left text-sm font-medium text-gray-700">Acciones</th> */}
+                <td colSpan={13} className="px-4 py-8 text-center text-gray-500">
+                  {isHoy ? 'No hay registros para hoy.' : 'No se encontraron registros.'}
+                </td>
               </tr>
-            </thead>
-            <tbody className="divide-y divide-gray-100 bg-white">
-              {cierres.length === 0 ? (
-                <tr>
-                  <td colSpan={13} className="px-4 py-8 text-center text-gray-500">
-                    {isHoy ? 'No hay registros para hoy.' : 'No se encontraron registros.'}
+            ) : (
+              cierres.map(c => (
+                <tr key={c.id} className="hover:bg-gray-200">
+                  <td className="px-4 py-2">{c.id}</td>
+                  <td className="px-4 py-2">{c.nombre_caja}</td>
+
+                  {/* Usuario Apertura */}
+                  <td className="px-4 py-2">
+                    <span className="font-semibold text-gray-800">
+                      {c.nombre_usuario_apertura || "-"}
+                    </span>
                   </td>
-                </tr>
-              ) : (
-                cierres.map(c => (
-                  <tr key={c.id} className="hover:bg-gray-200">
-                    <td className="px-4 py-2">{c.id}</td>
-                    <td className="px-4 py-2">{c.nombre_caja}</td>
 
-                    {/* Usuario Apertura */}
-                    <td className="px-4 py-2">
-                      <span className="font-semibold text-gray-800">
-                        {c.nombre_usuario_apertura || "-"}
-                      </span>
-                    </td>
+                  {/* Fecha Apertura */}
+                  <td className="px-4 py-2">
+                    {c.fecha_apertura ? formatFecha(c.fecha_apertura) : "-"}
+                  </td>
 
-                    {/* Fecha Apertura */}
-                    <td className="px-4 py-2">
-                      {c.fecha_apertura ? formatFecha(c.fecha_apertura) : "-"}
-                    </td>
+                  {/* Hora Apertura */}
+                  <td className="px-4 py-2">
+                    {c.hora_apertura || "-"}
+                  </td>
 
-                    {/* Hora Apertura */}
-                    <td className="px-4 py-2">
-                      {c.hora_apertura || "-"}
-                    </td>
+                  {/* Hora Cierre */}
+                  <td className="px-4 py-2">
+                    {c.hora_cierre || "-"}
+                  </td>
 
-                    {/* Hora Cierre */}
-                    <td className="px-4 py-2">
-                      {c.hora_cierre || "-"}
-                    </td>
-
-                    <td className="px-4 py-2">{`$${formatNumber(c.monto_inicial)}`}</td>
-                    <td className="px-4 py-2">{`$${formatNumber(c.total_efectivo)}`}</td>
-                    <td className="px-4 py-2">{`$${formatNumber(c.total_tarjeta)}`}</td>
-                    <td className="px-4 py-2">{`$${formatNumber(c.total_general)}`}</td>
-                    <td className="px-4 py-2">
-                      <span
-                        className={`px-2 py-1 rounded text-white text-xs font-semibold
+                  <td className="px-4 py-2">{`$${formatNumber(c.monto_inicial)}`}</td>
+                  <td className="px-4 py-2">{`$${formatNumber(c.total_efectivo)}`}</td>
+                  <td className="px-4 py-2">{`$${formatNumber(c.total_tarjeta)}`}</td>
+                  <td className="px-4 py-2">{`$${formatNumber(c.total_general)}`}</td>
+                  <td className="px-4 py-2">
+                    {`$${formatNumber((Number(c?.total_general) || 0) + (Number(c?.monto_inicial) || 0))}`}
+                  </td>
+                  <td className="px-4 py-2">
+                    <span
+                      className={`px-2 py-1 rounded text-white text-xs font-semibold
                           ${c.estado === 'abierta' ? 'bg-blue-500' : 'bg-red-500'}`}
-                      >
-                        {c.estado}
-                      </span>
-                    </td>
-                    {/* Acciones (mantener comentado) */}
-                    {/* <td className="px-4 py-2 space-x-2 flex">
+                    >
+                      {c.estado}
+                    </span>
+                  </td>
+                  {/* Acciones (mantener comentado) */}
+                  {/* <td className="px-4 py-2 space-x-2 flex">
                       <Link href={`/dashboard/cierres/${c.id}`} className="h-7 w-7 bg-blue-500 text-white rounded hover:bg-blue-800 transition flex items-center justify-center">
                         <PencilSquareIcon className="h-5 w-5 inline" />
                       </Link>
@@ -348,33 +352,33 @@ export default function CierresPage() {
                         <TrashIcon className="h-5 w-5 inline" />
                       </button>
                     </td> */}
-                  </tr>
-                ))
-              )}
-            </tbody>
-          </table>
+                </tr>
+              ))
+            )}
+          </tbody>
+        </table>
 
-          {/* Paginación */}
-          <div className="mt-4 flex items-center justify-center space-x-4">
-            <button
-              disabled={page <= 1}
-              onClick={() => setPage(page - 1)}
-              className="px-3 py-1 rounded bg-gray-200 hover:bg-gray-400 disabled:opacity-50"
-            >
-              Anterior
-            </button>
-            <span>
-              Página {page} de {Math.ceil(total / pageSize)}
-            </span>
-            <button
-              disabled={page * pageSize >= total}
-              onClick={() => setPage(page + 1)}
-              className="px-3 py-1 rounded bg-gray-200 hover:bg-gray-400 disabled:opacity-50"
-            >
-              Siguiente
-            </button>
-          </div>
+        {/* Paginación */}
+        <div className="mt-4 flex items-center justify-center space-x-4">
+          <button
+            disabled={page <= 1}
+            onClick={() => setPage(page - 1)}
+            className="px-3 py-1 rounded bg-gray-200 hover:bg-gray-400 disabled:opacity-50"
+          >
+            Anterior
+          </button>
+          <span>
+            Página {page} de {Math.ceil(total / pageSize)}
+          </span>
+          <button
+            disabled={page * pageSize >= total}
+            onClick={() => setPage(page + 1)}
+            className="px-3 py-1 rounded bg-gray-200 hover:bg-gray-400 disabled:opacity-50"
+          >
+            Siguiente
+          </button>
         </div>
+      </div>
     </div>
   );
 }
