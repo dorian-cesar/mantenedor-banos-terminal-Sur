@@ -68,6 +68,7 @@ export default function EditUserPage() {
           username: user.username || '',
           email: user.email || '',
           role: roleExists ? normalizedRole : ROLES[0].value,
+          is_active: user.is_active !== undefined ? Boolean(user.is_active) : true,
           password: '', // nunca prellenes password
         });
       } catch (err) {
@@ -87,7 +88,12 @@ export default function EditUserPage() {
 
   const handleChange = (e) => {
     if (!form) return;
-    setForm({ ...form, [e.target.name]: e.target.value });
+    const { name, value } = e.target;
+
+    setForm({
+      ...form,
+      [name]: name === 'is_active' ? (value === 'true') : value,
+    });
   };
 
   const handleSubmit = async (e) => {
@@ -111,6 +117,7 @@ export default function EditUserPage() {
       username: form.username,
       email: form.email,
       role,
+      is_active: Boolean(form.is_active),
     };
     if (form.password && form.password.trim().length > 0) {
       payload.password = form.password.trim();
@@ -167,7 +174,7 @@ export default function EditUserPage() {
             className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
           />
         </div>
-        {/*
+        {/*         
         {isAdmin && (
           <div>
             <label className="block text-gray-700 font-medium mb-1">Contraseña (dejar en blanco para no cambiar):</label>
@@ -199,6 +206,20 @@ export default function EditUserPage() {
                 {r.label}
               </option>
             ))}
+          </select>
+        </div>
+
+        <div>
+          <label className="block text-gray-700 font-medium mb-1">Estado:</label>
+          <select
+            name="is_active"
+            value={form.is_active.toString()} // controlled select espera string
+            onChange={handleChange}
+            className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
+            required
+          >
+            <option value="true">Activo</option>
+            <option value="false">Inactivo</option>
           </select>
         </div>
 

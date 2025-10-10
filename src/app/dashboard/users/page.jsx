@@ -21,6 +21,16 @@ export default function UsersPage() {
   const [currentUser, setCurrentUser] = useState(null);
   const { showNotification } = useNotification();
 
+  const formatActive = (val) => {
+    // cubre boolean, number, y strings como "1"/"0"/"true"/"false"
+    if (val === true || val === 'true') return 'Activo';
+    if (val === false || val === 'false') return 'Inactivo';
+    const num = Number(val);
+    if (!Number.isNaN(num)) return num === 1 ? 'Activo' : 'Inactivo';
+    // por defecto, si viene undefined/null -> Inactivo (puedes cambiarlo)
+    return 'Inactivo';
+  };
+
   const fetchUsers = async () => {
     setLoading(true);
     setError(null);
@@ -118,16 +128,18 @@ export default function UsersPage() {
                 <th className="px-4 py-2 text-left text-sm font-medium text-gray-700">Username</th>
                 <th className="px-4 py-2 text-left text-sm font-medium text-gray-700">Email</th>
                 <th className="px-4 py-2 text-left text-sm font-medium text-gray-700">Rol</th>
+                <th className="px-4 py-2 text-left text-sm font-medium text-gray-700">Estado</th>
                 {canEdit && <th className="px-4 py-2 text-left text-sm font-medium text-gray-700">Acciones</th>}
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-100 bg-white">
               {users.map((u) => (
-                <tr key={u.id} className="hover:bg-gray-200">
+                <tr key={u.id} className={`px-4 py-2 capitalize ${formatActive(u.is_active) === 'Activo' ? 'bg-gray-100' : 'bg-gray-300'}`}>
                   <td className="px-4 py-2">{u.id}</td>
                   <td className="px-4 py-2">{u.username}</td>
                   <td className="px-4 py-2">{u.email}</td>
                   <td className="px-4 py-2 capitalize">{u.role}</td>
+                  <td className="px-4 py-2 capitalize">{formatActive(u.is_active)}</td>
                   {canEdit && (
                     <td className="px-4 py-2 space-x-2 flex">
                       {u.id !== currentUser?.id && (
@@ -139,7 +151,7 @@ export default function UsersPage() {
                           <PencilSquareIcon className="h-5 w-5 inline" />
                         </Link>
                       )}
-                      {u.id !== currentUser?.id && (
+                      {/* {u.id !== currentUser?.id && (
                         <button
                           onClick={() => handleDelete(u.id)}
                           className="h-7 w-7 bg-red-500 text-white rounded hover:bg-red-800 transition flex items-center justify-center"
@@ -147,7 +159,7 @@ export default function UsersPage() {
                         >
                           <TrashIcon className="h-5 w-5 inline" />
                         </button>
-                      )}
+                      )} */}
                     </td>
                   )}
                 </tr>

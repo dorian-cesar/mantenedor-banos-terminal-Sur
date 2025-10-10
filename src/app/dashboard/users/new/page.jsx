@@ -35,7 +35,8 @@ export default function NewUserPage() {
     username: '',
     email: '',
     password: '',
-    role: ''
+    role: '',
+    is_active: true,
   });
 
   useEffect(() => {
@@ -50,7 +51,7 @@ export default function NewUserPage() {
     e.preventDefault();
 
     try {
-      await userService.create({ ...form, role: normalizeRole(form.role) });
+      await userService.create({ ...form, role: normalizeRole(form.role), is_active: true });
       showNotification({
         type: "success",
         title: "Usuario creado",
