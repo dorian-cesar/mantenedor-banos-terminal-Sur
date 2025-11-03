@@ -43,7 +43,8 @@ export default function MovimientosPage() {
     id_servicio: '',
     medio_pago: '',
     fecha_inicio: '',
-    fecha_fin: ''
+    fecha_fin: '',
+    id_aperturas_cierres: ''
   });
 
   useEffect(() => {
@@ -210,6 +211,21 @@ export default function MovimientosPage() {
         </div>
 
         <div className="flex flex-col">
+          <label htmlFor="id_aperturas_cierres" className="text-sm font-medium text-gray-700">ID Apertura</label>
+          <input
+            id="id_aperturas_cierres"
+            name="id_aperturas_cierres"
+            type="number"
+            min="1"
+            placeholder="Filtrar por ID de apertura"
+            value={filtros.id_aperturas_cierres}
+            onChange={handleFiltroChange}
+            className="px-3 py-2 border border-gray-300 rounded"
+          />
+        </div>
+      </div>
+      <div className="mb-4 flex flex-wrap gap-4">
+        <div className="flex flex-col">
           <label htmlFor="id_usuario" className="text-sm font-medium text-gray-700">Usuario</label>
           <select
             id="id_usuario"
@@ -303,6 +319,7 @@ export default function MovimientosPage() {
             <thead className="bg-gray-100">
               <tr>
                 <th className="px-4 py-2 text-left text-sm font-medium text-gray-700">ID</th>
+                <th className="px-4 py-2 text-left text-sm font-medium text-gray-700">ID Apertura</th>
                 <th className="px-4 py-2 text-left text-sm font-medium text-gray-700">Usuario</th>
                 <th className="px-4 py-2 text-left text-sm font-medium text-gray-700">Servicio</th>
                 <th className="px-4 py-2 text-left text-sm font-medium text-gray-700">Caja</th>
@@ -327,6 +344,7 @@ export default function MovimientosPage() {
                 movimientos.map(m => (
                   <tr key={m.id} className="hover:bg-gray-200">
                     <td className="px-4 py-2">{m.id}</td>
+                    <td className="px-4 py-2">{m.id_aperturas_cierres}</td>
                     <td className="px-4 py-2">{m.nombre_usuario}</td>
                     <td className="px-4 py-2">{m.nombre_servicio}</td>
                     <td className="px-4 py-2">{m.nombre_caja}</td>
