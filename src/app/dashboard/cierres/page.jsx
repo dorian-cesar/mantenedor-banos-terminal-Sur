@@ -329,11 +329,13 @@ export default function CierresPage() {
                   </td>
 
                   <td className="px-4 py-2">{`$${formatNumber(c.monto_inicial)}`}</td>
-                  <td className="px-4 py-2">{`$${formatNumber(c.total_efectivo)}`}</td>
-                  <td className="px-4 py-2">{`$${formatNumber(c.total_tarjeta)}`}</td>
-                  <td className="px-4 py-2">{`$${formatNumber(c.total_general)}`}</td>
+                  <td className="px-4 py-2">{`$${formatNumber(Number(c.total_efectivo_mov ?? c.total_efectivo ?? 0))}`}</td>
+                  <td className="px-4 py-2">{`$${formatNumber(Number(c.total_tarjeta_mov ?? c.total_tarjeta ?? 0))}`}</td>
+                  <td className="px-4 py-2">{`$${formatNumber(Number(c.total_general_mov ?? c.total_general ?? 0))}`}</td>
                   <td className="px-4 py-2">
-                    {`$${formatNumber((Number(c?.total_general) || 0) + (Number(c?.monto_inicial) || 0))}`}
+                    {`$${formatNumber(
+                      (Number(c.total_general_mov ?? c.total_general ?? 0) || 0) + (Number(c.monto_inicial) || 0)
+                    )}`}
                   </td>
                   <td className="px-4 py-2">
                     <span
