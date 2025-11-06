@@ -5,6 +5,7 @@ export default function CajaCard({ caja, onOpen }) {
     const {
         numero_caja,
         nombre,
+        id_apertura,
         ubicacion,
         estado_caja,
         estado_apertura,
@@ -33,6 +34,9 @@ export default function CajaCard({ caja, onOpen }) {
                         <h3 className="text-lg sm:text-xl font-semibold text-gray-900 truncate">
                            ({numero_caja}) {nombre || `Caja ${numero_caja}`} · {nombre_usuario}
                         </h3>
+                        <p className="text-sm sm:text-base text-gray-600 truncate">
+                            Numero apertura · {Number(id_apertura || 0)}
+                        </p>
                         <p className="text-sm sm:text-base text-gray-600 truncate">
                             {ubicacion || "Sin ubicación"} · {estado_caja || "—"}
                         </p>
