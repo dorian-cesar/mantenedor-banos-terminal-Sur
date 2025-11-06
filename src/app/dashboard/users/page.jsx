@@ -83,7 +83,7 @@ export default function UsersPage() {
   };
 
   return (
-    <div className="">
+    <div>
       {/* header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-4 gap-3">
         <div className="flex items-center gap-3">
