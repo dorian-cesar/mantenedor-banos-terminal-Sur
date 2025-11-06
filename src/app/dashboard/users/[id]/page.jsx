@@ -29,6 +29,11 @@ export default function EditUserPage() {
     return normalizeRole(u?.role) === 'admin';
   });
 
+  const [isSuperUser, setIsSuperUser] = useState(() => {
+    const u = getCurrentUser();
+    return u?.id === 1;
+  });
+
   const [form, setForm] = useState(null);
   const [loading, setLoading] = useState(true);
 
@@ -174,10 +179,10 @@ export default function EditUserPage() {
             className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
           />
         </div>
-        {/*         
-        {isAdmin && (
+                
+        {isSuperUser && (
           <div>
-            <label className="block text-gray-700 font-medium mb-1">Contraseña (dejar en blanco para no cambiar):</label>
+            <label className="block text-gray-700 font-medium mb-1">Contraseña (solo superUser):</label>
             <input
               type="password"
               name="password"
@@ -190,7 +195,7 @@ export default function EditUserPage() {
             <p className="text-sm text-gray-500 mt-1">Mínimo 6 caracteres si la cambias</p>
           </div>
         )}
-          */}
+         
         {/* Rol */}
         <div>
           <label className="block text-gray-700 font-medium mb-1">Rol:</label>
