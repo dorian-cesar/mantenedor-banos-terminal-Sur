@@ -160,12 +160,20 @@ export default function DashboardPage() {
           {/* Totales del día */}
           <div className="bg-white rounded-2xl shadow p-5">
             <h3 className="text-xl font-semibold mb-2">Totales del día (todas las cajas)</h3>
-            <div className="grid grid-cols-1 sm:grid-cols-5 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-7 gap-4">
               <Stat label="Efectivo" value={`$${Number(resumenCajas?.totales?.efectivo ?? 0).toLocaleString('es-CL')}`} />
               <Stat label="Tarjeta" value={`$${Number(resumenCajas?.totales?.tarjeta ?? 0).toLocaleString('es-CL')}`} />
               <Stat label="Total" value={`$${Number(resumenCajas?.totales?.total ?? 0).toLocaleString('es-CL')}`} />
               <Stat label="Retiro" value={`$${Number(resumenCajas?.totales?.retiros ?? 0).toLocaleString('es-CL')}`} />
               <Stat label="Transacciones" value={Number(resumenCajas?.totales?.transacciones ?? 0).toLocaleString('es-CL')} />
+              <Stat
+                label="Transacciones Baño"
+                value={resumenCajas?.totales?.desglose_servicios?.find(s => s.tipo === 'BAÑO')?.cantidad ?? 0}
+              />
+              <Stat
+                label="Transacciones Ducha"
+                value={resumenCajas?.totales?.desglose_servicios?.find(s => s.tipo === 'DUCHA')?.cantidad ?? 0}
+              />
             </div>
           </div>
 
@@ -176,11 +184,12 @@ export default function DashboardPage() {
             ))}
           </div>
         </>
-      )}
+      )
+      }
 
       {/* Modal */}
       <DetallesCajaModal open={open} onClose={handleClose} caja={selectedCaja} />
-    </div>
+    </div >
   );
 }
 

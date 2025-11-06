@@ -10,6 +10,7 @@ import { cierreService } from '@/services/cierre.service';
 import { helperService } from '@/services/helper.service';
 
 import { formatFecha, formatNumber, todayChile } from '@/utils/helper';
+import { getCurrentUser } from '@/utils/session';
 import { useNotification } from "@/contexts/NotificationContext";
 
 const TABS = { HOY: 'hoy', HISTORICO: 'historico' };
@@ -26,6 +27,12 @@ export default function CierresPage() {
   const [pageSize] = useState(10);
   const [search, setSearch] = useState('');
   const [total, setTotal] = useState(0);
+
+  const [isSuperUser, setIsSuperUser] = useState(() => {
+    const u = getCurrentUser();
+    return u?.id === 1;
+  });
+
 
   const [metadata, setMetadata] = useState({ usuarios: [], cajas: [], mediosPago: [] });
   const [filtros, setFiltros] = useState({
@@ -314,6 +321,7 @@ export default function CierresPage() {
                   <th className="px-4 py-2 text-left text-sm font-medium text-gray-700">Total Venta</th>
                   <th className="px-4 py-2 text-left text-sm font-medium text-gray-700">Total General</th>
                   <th className="px-4 py-2 text-left text-sm font-medium text-gray-700">Estado</th>
+                  {isSuperUser && (<th className="px-4 py-2 text-left text-sm font-medium text-gray-700">Acciones</th>)}
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-100 bg-white">
@@ -362,6 +370,17 @@ export default function CierresPage() {
                           {c.estado}
                         </span>
                       </td>
+                      {isSuperUser && (
+                        <td className="px-4 py-3 space-x-2 flex">
+                          <Link
+                            href={`/dashboard/cierres/${c.id}`}
+                            className="h-8 w-8 bg-blue-500 text-white rounded hover:bg-blue-800 transition flex items-center justify-center"
+                            aria-label={`Editar apertura ${c.id}`}
+                          >
+                            <PencilSquareIcon className="h-5 w-5" />
+                          </Link>
+                        </td>
+                      )}
                     </tr>
                   ))
                 )}
@@ -385,14 +404,25 @@ export default function CierresPage() {
                     <h3 className="text-sm font-semibold text-gray-800">
                       #{c.id} - {c.nombre_caja}
                     </h3>
-                    <span
-                      className={`text-xs font-medium px-2 py-1 rounded-full ${c.estado === 'abierta'
+                    <div className='flex items-center gap-4'>
+                      <span
+                        className={`text-xs font-medium px-2 py-1 rounded-full ${c.estado === 'abierta'
                           ? 'bg-blue-100 text-blue-800'
                           : 'bg-red-100 text-red-800'
-                        }`}
-                    >
-                      {c.estado}
-                    </span>
+                          }`}
+                      >
+                        {c.estado}
+                      </span>
+                      {isSuperUser && (
+                        <Link
+                          href={`/dashboard/cierres/${c.id}`}
+                          className="p-2 bg-blue-500 text-white rounded-full hover:bg-blue-800 transition flex items-center justify-center"
+                          aria-label={`Editar apertura ${c.id}`}
+                        >
+                          <PencilSquareIcon className="h-6 w-6" />
+                        </Link>
+                      )}
+                    </div>
                   </div>
 
                   <div className="space-y-2 text-sm text-gray-600">
