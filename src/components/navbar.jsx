@@ -83,7 +83,7 @@ export default function Navbar() {
                 className="text-white hover:text-gray-300 transition"
                 onClick={closeMobileMenu}
             >
-                <h1 className="text-xl lg:text-3xl font-bold">Mantenedor de Baños</h1>
+                <h1 className="text-xl lg:text-3xl font-bold pl-14 md:pl-0">Mantenedor de Baños</h1>
             </Link>
 
             {/* Menú Desktop */}

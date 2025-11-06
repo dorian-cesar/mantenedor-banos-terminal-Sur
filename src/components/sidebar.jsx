@@ -194,7 +194,7 @@ export default function Sidebar() {
   return (
     <>
       {/* Mobile hamburger - visible solo en móvil */}
-      <div className={`${mobileOpen ? "hidden" : ""} md:hidden fixed top-20 left-4 z-40`}>
+      <div className={`${mobileOpen ? "hidden" : ""} md:hidden fixed top-4 left-4 z-40`}>
         <button
           aria-label={mobileOpen ? "Cerrar menú" : "Abrir menú"}
           onClick={() => setMobileOpen((s) => !s)}

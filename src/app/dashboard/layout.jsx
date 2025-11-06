@@ -8,13 +8,13 @@ export const metadata = {
 
 export default function DashboardLayout({ children }) {
     return (
-      <div className="flex h-screen">
+      <div className="flex min-h-screen">
         <Sidebar />
   
         {/* Contenido principal */}
-        <div className="flex flex-col flex-1">
+        <div className="flex flex-col flex-1 min-w-0">
           <Navbar />
-          <main className="flex-1 p-6 overflow-y-auto">{children}</main>
+          <main className="flex-1 p-6 overflow-y-auto min-w-0">{children}</main>
         </div>
       </div>
     );
