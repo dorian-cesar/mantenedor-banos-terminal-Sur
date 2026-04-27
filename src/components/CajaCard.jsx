@@ -1,5 +1,6 @@
 "use client";
 import { BanknotesIcon, CreditCardIcon, ChevronRightIcon } from "@heroicons/react/24/outline";
+import { toNumber } from "@/utils/helper";
 
 export default function CajaCard({ caja, onOpen }) {
     const {
@@ -41,7 +42,7 @@ export default function CajaCard({ caja, onOpen }) {
                             {ubicacion || "Sin ubicación"} · {estado_caja || "—"}
                         </p>
                         <p className="text-sm sm:text-base text-gray-600 truncate">
-                            Monto inicial · {Number(monto_inicial || 0).toLocaleString("es-CL")}
+                            Monto inicial · {toNumber(monto_inicial).toLocaleString("es-CL")}
                         </p>
                     </div>
 
@@ -55,10 +56,10 @@ export default function CajaCard({ caja, onOpen }) {
                     </span>
                 </div>
 
-                {/* Total */}
+                {/* Neto (Total + Monto Inicial + Retiros) */}
                 <div className="flex-1 flex items-center justify-center my-4 sm:my-5">
                     <p className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900 tracking-tight whitespace-nowrap">
-                        ${Number(total || 0).toLocaleString("es-CL")}
+                        ${Number(toNumber(total) + toNumber(monto_inicial) + toNumber(retiros)).toLocaleString("es-CL")}
                     </p>
                 </div>
 
@@ -68,17 +69,17 @@ export default function CajaCard({ caja, onOpen }) {
                         <Metric
                             icon={<BanknotesIcon className="h-4 w-4 sm:h-5 sm:w-5" />}
                             label="Efectivo"
-                            value={`$${Number(efectivo || 0).toLocaleString("es-CL")}`}
+                            value={`$${toNumber(efectivo).toLocaleString("es-CL")}`}
                         />
                         <Metric
                             icon={<CreditCardIcon className="h-4 w-4 sm:h-5 sm:w-5" />}
                             label="Tarjeta"
-                            value={`$${Number(tarjeta || 0).toLocaleString("es-CL")}`}
+                            value={`$${toNumber(tarjeta).toLocaleString("es-CL")}`}
                         />
-                        <Metric label="Transacciones" value={Number(transacciones || 0)} />
+                        <Metric label="Transacciones" value={toNumber(transacciones)} />
                         <Metric
                             label="Retiro"
-                            value={`$${Number(retiros || 0).toLocaleString("es-CL")}`}
+                            value={`$${toNumber(retiros).toLocaleString("es-CL")}`}
                         />
                     </div>
 
